@@ -107,7 +107,12 @@ behind it yet), **planned** = nav entry + "coming soon" card only.
    6. P-TECH Associate Degree Tracker — planned
    7. CTE Articulation Credit Vault — planned
 3. College Targeting & Major Alignment
-   8. Career-to-College Target Matcher — planned
+   8. Career-to-College Target Matcher — **live** (real data from the U.S.
+      Dept of Education's College Scorecard API — admit rate, tuition,
+      10-yr median earnings for 6,000+ institutions; search by name/state,
+      not a curated "best for your track" ranking, since that would need
+      CIP-code field-of-study filtering not yet verified — see
+      `app/api/college-matcher/route.ts`, needs `COLLEGE_SCORECARD_API_KEY`)
    9. Direct-Admit & BS/MD Pathway Planner — planned
    10. University Essay Prompt Deconstructor — **live** (splits any pasted
        prompt into its sub-questions + word-count target, pairs each with
@@ -202,3 +207,42 @@ institution-specific or state-specific data (college admissions stats,
 CTECH/P-TECH program details, articulation agreements, state labor law)
 that isn't sourced in this environment; fabricating specifics there would
 be worse than leaving them as "coming soon."
+
+## Round 6: real external data sourcing for the remaining features
+
+A deep-research pass (external, not this session's own tools) evaluated a
+real authoritative data source for each of the 9 still-planned features that
+need external data. Verdicts, condensed:
+
+- **BUILD NOW** (clean free API, no manual curation): #8 Career-to-College
+  Target Matcher (College Scorecard API) and #18 Transit & Commute Route
+  Planner (GTFS via Transitland/OpenRouteService).
+- **BUILD WITH MAINTENANCE** (real source, but static/manual, needs periodic
+  re-ingestion): #5/#6 CTECH & P-TECH Tracker (ptech.org + state CTE
+  registries), #9 Direct-Admit & BS/MD Planner (AAMC's official directory),
+  #12 Youth Labor Laws (DOL WHD state comparison tables), #13 Clinical
+  Liability Hub (HHS OCR HIPAA guidance + OSHA 29 CFR 1910.1030 — info only,
+  explicitly not a legal waiver generator), #16 W-4/Tax Guide (IRS Form
+  W-4 + Pub 505).
+- **DO NOT BUILD YET** (no aggregated source exists at all): #3
+  Dual-Enrollment Predictor and #7 CTE Articulation Vault — both are
+  decentralized, per-district/per-state legal agreements (ASSIST.org has no
+  public API as of the research date; CTE articulation MOUs live in
+  unstructured per-district PDFs). Would need real per-region manual data
+  collection to build honestly, not scraping/fabrication.
+
+**#8 Career-to-College Target Matcher was built this round** —
+`app/api/college-matcher/route.ts` proxies the real College Scorecard API
+server-side (same env-var-gated-501 pattern as every other API route;
+needs a free `COLLEGE_SCORECARD_API_KEY` from api.data.gov). Deliberately
+scoped as a plain search (by school name/state) rather than a "matched to
+your career track" ranking, since that would require CIP-code
+field-of-study query parameters this session didn't verify precisely
+enough to trust — mis-mapping a CIP code would silently return wrong
+schools for a track, which is worse than not filtering at all.
+
+The other 8 features in this list remain planned. Building the
+"BUILD WITH MAINTENANCE" tier means hand-transcribing real government/
+official-source tables into seed data (same pattern as the certifications
+catalog) — real work, not a quick follow-up — so each should be its own
+explicit ask rather than assumed.

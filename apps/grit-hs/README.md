@@ -50,6 +50,19 @@
   data rather than any new fabricated content. 11 features remain planned —
   see `CLAUDE.md` for which ones and why (mostly real institution- or
   state-specific data this environment doesn't have).
+- **Round 6** (done): a deep-research pass identified real authoritative
+  data sources for the remaining 9 data-dependent features (verdicts in
+  `CLAUDE.md`) — 2 have clean free APIs, 5 have a real source but need
+  static curation, 2 have no aggregated source at all and shouldn't be
+  built without real per-region data collection. Built #8 Career-to-College
+  Target Matcher against the real U.S. Dept of Education College Scorecard
+  API (`app/api/college-matcher/route.ts`, needs a free
+  `COLLEGE_SCORECARD_API_KEY`) — a plain school search, not a "matched to
+  your track" ranking, since that needs CIP-code filtering not yet verified
+  precisely enough to trust. Also fixed a real layout bug this round: the
+  candy-glass button styling's `overflow-hidden` could clip button label
+  text when a button was squeezed by flex siblings — fixed globally with
+  `shrink-0` on the button base styles.
 
 ## ⚠️ No real backend is connected in this environment
 
@@ -89,7 +102,9 @@ To actually run this against a real backend: create a Supabase project, run
 all three files in `supabase/migrations/` against it in order (the third
 creates the `credentials` Storage bucket + its RLS policies), copy
 `.env.local.example` to `.env.local` and fill in the values, and
-(optionally) add `ANTHROPIC_API_KEY` for live cold-outreach generation.
+(optionally) add `ANTHROPIC_API_KEY` for live cold-outreach generation and
+`COLLEGE_SCORECARD_API_KEY` (free from api.data.gov) for the College
+Matcher.
 
 ## Stack
 

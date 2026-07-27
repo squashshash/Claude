@@ -19,6 +19,7 @@ import { TrackLeaderboard } from "./track-leaderboard";
 import { CounselorExport } from "./counselor-export";
 import { ParentDashboard } from "./parent-dashboard";
 import { EssayDeconstructor } from "./essay-deconstructor";
+import { CollegeMatcher } from "./college-matcher";
 
 export const FEATURE_COMPONENTS: Record<string, ComponentType> = {
   "gpa-calculator": GpaCalculator,
@@ -41,4 +42,5 @@ export const FEATURE_COMPONENTS: Record<string, ComponentType> = {
   "counselor-export": CounselorExport,
   "parent-dashboard": ParentDashboard,
   "essay-deconstructor": EssayDeconstructor,
+  "college-matcher": CollegeMatcher,
 };

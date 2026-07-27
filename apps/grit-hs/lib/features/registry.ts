@@ -84,8 +84,8 @@ export const FEATURE_CATEGORIES: FeatureCategory[] = [
         slug: "college-matcher",
         number: 8,
         title: "Career-to-College Target Matcher",
-        blurb: "Top-tier and direct-admit programs for your career, with real benchmarks.",
-        status: "planned",
+        blurb: "Search real colleges by name or state — admit rate, tuition, and earnings.",
+        status: "live",
       },
       {
         slug: "direct-admit-planner",

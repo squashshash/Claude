@@ -16,6 +16,9 @@ import { MentorMatcher } from "./mentor-matcher";
 import { FourYearPlanner } from "./four-year-planner";
 import { LicenseTracker } from "./license-tracker";
 import { TrackLeaderboard } from "./track-leaderboard";
+import { CounselorExport } from "./counselor-export";
+import { ParentDashboard } from "./parent-dashboard";
+import { EssayDeconstructor } from "./essay-deconstructor";
 
 export const FEATURE_COMPONENTS: Record<string, ComponentType> = {
   "gpa-calculator": GpaCalculator,
@@ -35,4 +38,7 @@ export const FEATURE_COMPONENTS: Record<string, ComponentType> = {
   "four-year-planner": FourYearPlanner,
   "license-tracker": LicenseTracker,
   "track-leaderboard": TrackLeaderboard,
+  "counselor-export": CounselorExport,
+  "parent-dashboard": ParentDashboard,
+  "essay-deconstructor": EssayDeconstructor,
 };

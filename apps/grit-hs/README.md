@@ -40,6 +40,16 @@
   12-week activity heatmap in the Hours Logger, a dashboard "Focus Mode"
   toggle, and a new bonus feature (#31) Track Leaderboard. See `CLAUDE.md`
   for exactly what was scoped out of that round's larger brainstorm and why.
+- **Round 5** (done): pushed the glass design several rounds further —
+  green-tinted glass, brighter primary/accent, an ambient background glow,
+  a hover light-sweep, a gradient wordmark, and finally much more
+  transparent "candy glass" with a permanent glossy shine and gumdrop-style
+  buttons — plus 3 more registry features converted from "coming soon" to
+  real (#10 Essay Prompt Deconstructor, #29 Counselor & Advisor Export Hub,
+  #30 Parent Read-Only Dashboard), all built by reusing existing real/sample
+  data rather than any new fabricated content. 11 features remain planned —
+  see `CLAUDE.md` for which ones and why (mostly real institution- or
+  state-specific data this environment doesn't have).
 
 ## ⚠️ No real backend is connected in this environment
 

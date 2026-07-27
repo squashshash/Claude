@@ -41,15 +41,21 @@ it), and a credential review/`is_verified` flow.
   interactive family (primary/secondary/accent) layered on top — no yellow,
   no teal, no generic blue SaaS blue. Defined as CSS custom properties in
   `app/globals.css`, themed for both light and dark.
-- Surface material ("Liquid Glass"): cards, the sidebar, and the header are
-  frosted slate-toned glass — translucent (`bg-card/55` etc.), blurred
-  (`backdrop-blur-xl`), with a cool slate `--glass-border` edge and a subtle
-  `--glass-highlight` top tint — floating over the opaque brown background,
-  rather than flat opaque panels. This was a deliberate pivot: a generic
-  design-system lookup suggested a slate+red "Liquid Glass" pairing; the
-  glass *material* was adopted but the palette was not — brown+green stays,
-  slate is used only for glass surfaces/borders, never as a primary color.
-  See `components/ui/card.tsx` and the `--card`/`--glass-*` tokens.
+- Surface material ("Liquid Glass" / "candy glass"): cards, the sidebar, and
+  the header are heavily transparent, forest-green-tinted glass (`bg-card`
+  down to ~15-22% opacity), blurred + saturated (`backdrop-blur-2xl
+  backdrop-saturate-200`), with a bright `--glass-border` edge, a permanent
+  glossy specular highlight blob (top-left radial gradient), and a one-shot
+  diagonal light-sweep on hover — floating over a slow-drifting ambient
+  green glow (`components/layout/ambient-glow.tsx`) behind the opaque brown
+  background, instead of flat opaque panels. Went through several rounds:
+  slate-tinted glass -> green-tinted glass -> brighter/more-saturated
+  primary+accent -> ambient glow + hover sweep + gradient wordmark -> much
+  more transparent + permanent glossy shine + gumdrop-style buttons ("candy
+  glass"). A generic design-system lookup suggested a slate+red "Liquid
+  Glass" pairing at the start; only the glass *material* was adopted, never
+  the palette — brown+green stays. See `components/ui/card.tsx`,
+  `components/ui/button.tsx`, and the `--card`/`--glass-*` tokens.
 - UI components: rounded cards and pill-shaped buttons/nav (`--radius`),
   hover-lift on cards, hover/press scale on buttons, clean serif/sans type
   hierarchy (`--font-display` / `--font-sans`), soft background fills.
@@ -103,7 +109,10 @@ behind it yet), **planned** = nav entry + "coming soon" card only.
 3. College Targeting & Major Alignment
    8. Career-to-College Target Matcher — planned
    9. Direct-Admit & BS/MD Pathway Planner — planned
-   10. University Essay Prompt Deconstructor — planned
+   10. University Essay Prompt Deconstructor — **live** (splits any pasted
+       prompt into its sub-questions + word-count target, pairs each with
+       one of your own completed milestones — no AI call, no fabricated
+       college-specific prompts)
 4. State Rules, Legal & Compliance Engine
    11. State-by-State Certification Rulebook — **live**
    12. Youth Minor Working Laws & Permit Guide — planned
@@ -137,8 +146,13 @@ behind it yet), **planned** = nav entry + "coming soon" card only.
    26. Weekly Task Deconstructor — **live**
    27. "Streak & Grit" Gamified Score System — **live**
    28. Near-Peer Mentor Matcher — **mock**
-   29. Counselor & Advisor Export Hub — planned
-   30. Parent Read-Only Dashboard — planned
+   29. Counselor & Advisor Export Hub — **live** (real printable one-pager:
+       roadmap progress, milestones by category, hours totals, credential
+       count — pulls the same real/sample data each source feature already
+       uses)
+   30. Parent Read-Only Dashboard — **live** (same real/sample stats +
+       full read-only Milestone Matrix; no forms, no upload controls, no
+       edit paths at all)
    31. Track Leaderboard (bonus, not in the original 30) — **mock**,
        anonymized sample peers ranked by XP alongside the real student XP
 
@@ -173,3 +187,18 @@ skill tree, and a QR code for the hours-verification link (needs a new
 dependency; deferred, not declined). Car license + job board ideas from
 that list were already covered by existing features #17 and #14 and were
 not rebuilt.
+
+## Round 5: 3 more features converted from "coming soon" to real
+
+#10 Essay Prompt Deconstructor, #29 Counselor & Advisor Export Hub, and #30
+Parent Read-Only Dashboard are now live, all built without any new
+fabricated content — each is either a generic client-side tool (essay
+splitter) or an aggregation view over data other features already fetch
+(export hub, parent dashboard reuse `useDashboardData`, `/api/hours`,
+`/api/credentials`, and the existing `MilestoneMatrix` component). 11
+features remain planned: #3, #5, #6, #7, #8, #9, #12, #13, #16, #18, #24 —
+mostly held back because building them honestly would require real
+institution-specific or state-specific data (college admissions stats,
+CTECH/P-TECH program details, articulation agreements, state labor law)
+that isn't sourced in this environment; fabricating specifics there would
+be worse than leaving them as "coming soon."

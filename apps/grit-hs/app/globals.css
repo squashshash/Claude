@@ -5,8 +5,8 @@
 /*
   Design direction: "trailhead" — topographic rivers/forests instead of the
   generic SaaS palette. Coffee-brown base (a warm, dark umber background)
-  with forest green primary and a warm gold accent for contrast, deep pine
-  dark mode, a rust/trailhead-orange accent reserved for XP moments.
+  with an all-green interactive palette on top — no yellow/teal — drawn
+  from a 5-shade forest-green ramp (0A5C36 -> 1D2E28).
 */
 
 @layer base {
@@ -20,11 +20,13 @@
     --primary: 148 30% 55%;
     --primary-foreground: 14 26% 14%;
 
-    --secondary: 200 30% 62%;
-    --secondary-foreground: 14 26% 14%;
+    /* 18392B — Dark green */
+    --secondary: 155 41% 16%;
+    --secondary-foreground: 30 30% 95%;
 
-    --accent: 38 75% 58%;
-    --accent-foreground: 14 30% 15%;
+    /* 0A5C36 — Lighthouse green */
+    --accent: 152 80% 20%;
+    --accent-foreground: 30 30% 96%;
 
     --muted: 14 18% 40%;
     --muted-foreground: 30 18% 78%;
@@ -55,10 +57,12 @@
     --primary: 148 30% 62%;
     --primary-foreground: 14 24% 10%;
 
-    --secondary: 200 25% 68%;
+    /* 18392B lightened for legibility against a near-black background */
+    --secondary: 155 30% 40%;
     --secondary-foreground: 14 24% 10%;
 
-    --accent: 38 72% 60%;
+    /* 0A5C36 lightened for legibility against a near-black background */
+    --accent: 152 55% 45%;
     --accent-foreground: 14 24% 10%;
 
     --muted: 14 16% 23%;
@@ -83,9 +87,9 @@
       --card-foreground: 30 25% 90%;
       --primary: 148 30% 62%;
       --primary-foreground: 14 24% 10%;
-      --secondary: 200 25% 68%;
+      --secondary: 155 30% 40%;
       --secondary-foreground: 14 24% 10%;
-      --accent: 38 72% 60%;
+      --accent: 152 55% 45%;
       --accent-foreground: 14 24% 10%;
       --muted: 14 16% 23%;
       --muted-foreground: 30 12% 68%;

@@ -1,13 +1,37 @@
 # Pathfinder HS
 
-4-year career-specialization roadmap platform for high schoolers. Phase 1
-scaffold: project layout + initial Supabase schema. No application code yet.
+4-year career-specialization roadmap platform for high schoolers.
+
+- **Phase 1** (done): project layout + initial Supabase schema.
+- **Phase 2** (done): Next.js app scaffold, dashboard shell (sidebar/header/XP),
+  and the Milestone Matrix/Card/Progress/Age-Gate components, rendering real
+  data seeded from a research doc on early-secondary career specialization
+  (6 career tracks, certification age-eligibility rules).
+- **Phase 3+** (not started): auth, live Supabase reads, AI outreach endpoint,
+  hours logger, CTSO directory, credential vault uploads.
 
 ## Stack
 
-Next.js 14 (App Router, TS) · Tailwind + Shadcn UI · Framer Motion ·
-Supabase (Postgres, Auth, Storage) · TanStack Query + Zustand ·
-React Hook Form + Zod · Vercel AI SDK (cold-email generator)
+Next.js 15 (App Router, TS) · Tailwind + hand-rolled Shadcn-style primitives ·
+Supabase (Postgres, Auth, Storage) · TanStack Query · React Hook Form + Zod ·
+Vercel AI SDK (cold-email generator, Phase 3)
+
+Note: scaffolded with Next.js 15.5.22 rather than 14 — `npm audit` flagged the
+Next 14.2.x line for the same set of advisories, and 15.5.22 is the current
+patched release with zero production-side vulnerabilities
+(`npm audit --omit=dev` is clean). Still App Router / same conventions the
+brief asked for.
+
+## Running it
+
+```bash
+cd apps/pathfinder-hs
+npm install
+npm run dev   # app currently redirects / -> /roadmap (no auth yet)
+```
+
+`/dashboard` and `/roadmap` render against `lib/mock-data.ts` (a placeholder
+student) until Phase 3 wires real Supabase auth + queries.
 
 ## Proposed project structure
 
@@ -103,7 +127,34 @@ Six tables, all with RLS enabled:
 Enums: `grade_level`, `milestone_category`, `milestone_status`,
 `hours_category`, `hours_status`.
 
+`supabase/migrations/0002_career_track_and_certifications_seed.sql` locks
+`target_career`/`career_track` to a `career_track` enum (the 6 tracks below)
+and seeds `certifications` with 19 real credentials and their age rules,
+sourced from the research doc — including the FINRA SIE's strict 18+ floor,
+the CNA's per-state split (16 in FL/TX, 18 in CA), and the NHA CCMA/CPT
+provisional-certification mechanics.
+
+## Career tracks & roadmap content (`lib/roadmap/templates/`)
+
+Each of the 6 tracks has a full Summer -0 → Grade 12 milestone set (4
+categories × 5 years = 20 milestones), taken from the research doc's
+per-track progression tables rather than placeholder content:
+
+- Pre-Medicine & Clinical Healthcare
+- Nursing & Advanced Practice
+- Software Engineering & Computational Systems
+- Financial Engineering & Quantitative Finance
+- Mechanical Engineering, CAD & Industrial Design
+- Jurisprudence, Constitutional Law & Public Policy
+
+Certification milestones that carry a real age gate (CNA, CCMA, FINRA SIE,
+SOLIDWORKS CSWA) are linked to the certifications catalog via `certRef`, so
+the Age-Gate Badge component computes "Locked · age N+ (X years to go)" from
+the same rules as the database seed (mirrored client-side for now in
+`lib/roadmap/age-rules.ts`; Phase 3 replaces this with a live query).
+
 ## Not yet built
 
-Everything past the schema: Next.js app itself, Shadcn setup, auth flow,
-dashboard UI, roadmap generation logic, AI endpoint. Next phase on request.
+Auth flow, live Supabase reads/writes, roadmap generation API route, AI
+outreach endpoint, hours logger, CTSO directory content, credential vault
+uploads, marketing page. Next phase on request.

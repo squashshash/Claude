@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Copy, Check, Info } from "lucide-react";
+import { Copy, Check, Info, Sparkles, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MOCK_STUDENT } from "@/lib/mock-data";
@@ -67,8 +67,12 @@ const FIELD_LABELS: Record<keyof FormState, string> = {
 export function ColdOutreach() {
   const [form, setForm] = useState<FormState>(DEFAULTS);
   const [copied, setCopied] = useState(false);
+  const [aiEmail, setAiEmail] = useState<string | null>(null);
+  const [aiNotice, setAiNotice] = useState<string | null>(null);
+  const [generating, setGenerating] = useState(false);
   const specialization = CAREER_TRACK_LABELS[MOCK_STUDENT.targetCareer];
-  const email = buildEmail(form, specialization);
+  const templateEmail = buildEmail(form, specialization);
+  const email = aiEmail ?? templateEmail;
 
   const copy = async () => {
     await navigator.clipboard.writeText(email);
@@ -76,13 +80,36 @@ export function ColdOutreach() {
     setTimeout(() => setCopied(false), 1800);
   };
 
+  const generateWithAi = async () => {
+    setGenerating(true);
+    setAiNotice(null);
+    try {
+      const res = await fetch("/api/outreach/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, specialization }),
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        setAiNotice(body.error ?? "AI generation isn't available right now — showing the template version.");
+        return;
+      }
+      setAiEmail(body.email);
+    } catch {
+      setAiNotice("Couldn't reach the AI endpoint — showing the template version.");
+    } finally {
+      setGenerating(false);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <Card>
         <CardContent className="flex items-start gap-3 p-4 text-sm text-muted-foreground">
           <Info className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
-          Template-based mail-merge for now, not a live AI call — plugging in a real model
-          (Vercel AI SDK) is a Phase 3 item once an API key is configured.
+          The template below is a real mail-merge, no model call. &quot;Generate with AI&quot; hits a
+          live endpoint (Vercel AI SDK + Claude) — it&apos;ll say so plainly if no API key is
+          configured yet rather than fake a result.
         </CardContent>
       </Card>
 
@@ -94,7 +121,10 @@ export function ColdOutreach() {
                 <span className="font-medium text-muted-foreground">{FIELD_LABELS[key]}</span>
                 <input
                   value={form[key]}
-                  onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
+                  onChange={(e) => {
+                    setForm((f) => ({ ...f, [key]: e.target.value }));
+                    setAiEmail(null);
+                  }}
                   className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </label>
@@ -104,13 +134,22 @@ export function ColdOutreach() {
 
         <Card>
           <CardContent className="flex flex-col gap-3 p-5">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-muted-foreground">Generated email</span>
-              <Button size="sm" variant="outline" className="gap-2" onClick={copy}>
-                {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                {copied ? "Copied" : "Copy"}
-              </Button>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-sm font-medium text-muted-foreground">
+                {aiEmail ? "AI-generated email" : "Template email"}
+              </span>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" className="gap-2" onClick={generateWithAi} disabled={generating}>
+                  {generating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                  Generate with AI
+                </Button>
+                <Button size="sm" variant="outline" className="gap-2" onClick={copy}>
+                  {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                  {copied ? "Copied" : "Copy"}
+                </Button>
+              </div>
             </div>
+            {aiNotice && <p className="text-sm text-muted-foreground">{aiNotice}</p>}
             <pre className="whitespace-pre-wrap rounded-md bg-muted/60 p-4 font-sans text-sm leading-relaxed">
               {email}
             </pre>

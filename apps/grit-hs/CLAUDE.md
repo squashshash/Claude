@@ -8,7 +8,24 @@
 Note: scaffolded on Next.js 15.5.22 rather than 14.x — `npm audit` flagged the
 entire 14.2.x line for the same advisories that 15.5.22 already patches
 (`npm audit --omit=dev` is clean on this app). Same App Router conventions
-either way.
+either way. Also on `@supabase/ssr@^0.12.3` rather than the originally
+scaffolded `^0.5.2` — that version's bundled types referenced internal
+`supabase-js` paths that no longer exist in current `supabase-js`, which
+silently resolved all typed table calls to `never` instead of erroring.
+
+## Auth & backend status (Phase 3)
+
+Login/signup/onboarding pages, `middleware.ts` route protection, and the
+`/api/roadmap/generate` + `/api/outreach/generate` routes are built and
+type-checked, but **no Supabase project or AI key is configured in this
+environment** — none of it has run against a real backend. Both API routes
+detect missing env vars and return a clear `501` instead of crashing; the
+middleware skips auth enforcement entirely until
+`NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY` are set. See the
+main README's "No real backend is connected" section for exact details and
+setup steps. The 10 "live" dashboard features below still read
+`lib/mock-data.ts`, not real queries — that's the next step once a project
+exists.
 
 ## Design System & Aesthetic ("Grit")
 - Color palette: dark coffee-brown background with a monochrome forest-green

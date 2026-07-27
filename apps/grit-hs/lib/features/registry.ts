@@ -45,7 +45,7 @@ export const FEATURE_CATEGORIES: FeatureCategory[] = [
         number: 4,
         title: "Specialized High School 4-Year Planner",
         blurb: "A balanced 9th-12th schedule mixing graduation requirements with career electives.",
-        status: "planned",
+        status: "live",
       },
     ],
   },
@@ -166,7 +166,7 @@ export const FEATURE_CATEGORIES: FeatureCategory[] = [
         number: 17,
         title: "Driver's License & Mobility Progress Tracker",
         blurb: "Permit hours, driver's ed, and your target road-test date.",
-        status: "planned",
+        status: "live",
       },
       {
         slug: "transit-planner",

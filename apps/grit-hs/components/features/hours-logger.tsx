@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eraser, Stethoscope, HeartHandshake, Users, Info } from "lucide-react";
+import { Eraser, Stethoscope, HeartHandshake, Users, Info, Printer } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -221,9 +221,42 @@ export function HoursLogger() {
     resetForm();
   };
 
+  const grandTotal = totals.clinical + totals.volunteer + totals.shadowing;
+
   return (
     <div className="flex flex-col gap-6">
-      <Card>
+      {/* Print-only summary — everything else below is print:hidden */}
+      <div className="hidden print:block">
+        <h1 className="text-2xl font-bold">Hours Summary</h1>
+        <p className="mt-1 text-sm">
+          Clinical: {totals.clinical}h &middot; Volunteer: {totals.volunteer}h &middot; Shadowing:{" "}
+          {totals.shadowing}h &middot; Total: {grandTotal}h
+        </p>
+        <table className="mt-4 w-full border-collapse text-sm">
+          <thead>
+            <tr className="border-b border-black text-left">
+              <th className="py-1 pr-4">Date</th>
+              <th className="py-1 pr-4">Category</th>
+              <th className="py-1 pr-4">Supervisor</th>
+              <th className="py-1 pr-4">Hours</th>
+              <th className="py-1">Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {entries.map((entry) => (
+              <tr key={entry.id} className="border-b border-black/20">
+                <td className="py-1 pr-4">{entry.date}</td>
+                <td className="py-1 pr-4">{CATEGORY_META[entry.category].label}</td>
+                <td className="py-1 pr-4">{entry.supervisorName}</td>
+                <td className="py-1 pr-4">{entry.hours}</td>
+                <td className="py-1">{entry.notes}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <Card className="print:hidden">
         <CardContent className="flex items-start gap-3 p-4 text-sm text-muted-foreground">
           <Info className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
           {isReal
@@ -232,11 +265,14 @@ export function HoursLogger() {
         </CardContent>
       </Card>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3 print:hidden">
         <Badge variant={isReal ? "default" : "locked"}>{isReal ? "Your data" : "Sample data"}</Badge>
+        <Button size="sm" variant="outline" className="gap-2" onClick={() => window.print()}>
+          <Printer className="h-3.5 w-3.5" /> Print / Save as PDF
+        </Button>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-3 print:hidden">
         {(Object.keys(CATEGORY_META) as HoursCategory[]).map((c) => {
           const { label, icon: Icon } = CATEGORY_META[c];
           return (
@@ -252,7 +288,7 @@ export function HoursLogger() {
         })}
       </div>
 
-      <Card>
+      <Card className="print:hidden">
         <CardContent className="p-5">
           <form onSubmit={submit} className="grid gap-4 sm:grid-cols-2">
             <label className="flex flex-col gap-1 text-sm">
@@ -327,7 +363,7 @@ export function HoursLogger() {
         </CardContent>
       </Card>
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 print:hidden">
         <AnimatePresence initial={false}>
           {entries.map((entry) => {
             const Icon = CATEGORY_META[entry.category].icon;

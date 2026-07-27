@@ -13,6 +13,8 @@ import { JobBoard } from "./job-board";
 import { GrantFinder } from "./grant-finder";
 import { SummerPrograms } from "./summer-programs";
 import { MentorMatcher } from "./mentor-matcher";
+import { FourYearPlanner } from "./four-year-planner";
+import { LicenseTracker } from "./license-tracker";
 
 export const FEATURE_COMPONENTS: Record<string, ComponentType> = {
   "gpa-calculator": GpaCalculator,
@@ -29,4 +31,6 @@ export const FEATURE_COMPONENTS: Record<string, ComponentType> = {
   "grant-finder": GrantFinder,
   "summer-programs": SummerPrograms,
   "mentor-matcher": MentorMatcher,
+  "four-year-planner": FourYearPlanner,
+  "license-tracker": LicenseTracker,
 };

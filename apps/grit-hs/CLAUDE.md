@@ -84,8 +84,9 @@ behind it yet), **planned** = nav entry + "coming soon" card only.
    1. Target GPA & Grade-Aiming Calculator — **live**
    2. AP/IB Course Optimizer — **live**
    3. Dual-Enrollment & Transferability Predictor — planned
-   4. Specialized High School 4-Year Planner — planned (the roadmap/matrix
-      already covers this; a dedicated academics-only view is still open)
+   4. Specialized High School 4-Year Planner — **live** (real career-track
+      electives per year, paired with a generic — explicitly not
+      state-specific — core graduation requirements model)
 2. Specialized Technical & Early College Hubs (CTECH / P-TECH)
    5. CTECH Program Integration — planned
    6. P-TECH Associate Degree Tracker — planned
@@ -103,7 +104,8 @@ behind it yet), **planned** = nav entry + "coming soon" card only.
    15. Stipend & Micro-Grant Finder — **mock**
    16. W-4 & Youth Tax Essentials Guide — planned
 6. Transportation & License Milestones
-   17. Driver's License & Mobility Progress Tracker — planned
+   17. Driver's License & Mobility Progress Tracker — **live** (permit
+       hours counter, driver's-ed toggle, road-test countdown)
    18. Transit & Commute Route Planner — planned
 7. Real-World Experience & Extracurriculars
    19. CTSO Competition Strategy Engine — **live**
@@ -111,8 +113,10 @@ behind it yet), **planned** = nav entry + "coming soon" card only.
        mail-merge for now; wiring an actual LLM call is a Phase 3 item once
        an AI SDK key is configured)
    21. Clinical & Volunteer Hours Verification Logger — **live** (tries
-       `/api/hours` first, falls back to local state; the signature
-       capture itself is still session-only — no column for it yet)
+       `/api/hours` first, falls back to local state; has a real printable
+       PDF summary and a real public supervisor-confirmation link at
+       `/verify-hours/[token]`; the signature capture itself is still
+       session-only — no column for it yet)
    22. High-Yield Summer Program Directory — **mock**
 8. Digital Portfolio & Resume Tools
    23. Dynamic "Grit" Resume Builder — **live**

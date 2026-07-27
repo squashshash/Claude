@@ -1,4 +1,4 @@
-# Grit HS
+# Grit
 
 4-year career-specialization roadmap platform for high schoolers.
 

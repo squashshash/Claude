@@ -29,7 +29,7 @@ export function Sidebar() {
     <aside className="hidden w-72 shrink-0 flex-col border-r border-glass-border/50 bg-card/35 shadow-[inset_-1px_0_0_0_hsl(var(--glass-highlight)/0.15)] backdrop-blur-2xl backdrop-saturate-150 md:flex print:hidden">
       <div className="flex h-20 items-center gap-2 border-b border-glass-border/30 px-6">
         <span className="font-display text-2xl font-bold tracking-tight text-primary">
-          Grit <span className="text-accent">HS</span>
+          Grit
         </span>
       </div>
       <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">

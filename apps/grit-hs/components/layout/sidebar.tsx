@@ -26,8 +26,8 @@ export function Sidebar() {
   );
 
   return (
-    <aside className="hidden w-72 shrink-0 flex-col border-r border-glass-border/20 bg-card/60 backdrop-blur-xl md:flex print:hidden">
-      <div className="flex h-20 items-center gap-2 border-b border-border px-6">
+    <aside className="hidden w-72 shrink-0 flex-col border-r border-glass-border/50 bg-card/35 shadow-[inset_-1px_0_0_0_hsl(var(--glass-highlight)/0.15)] backdrop-blur-2xl backdrop-saturate-150 md:flex print:hidden">
+      <div className="flex h-20 items-center gap-2 border-b border-glass-border/30 px-6">
         <span className="font-display text-2xl font-bold tracking-tight text-primary">
           Grit <span className="text-accent">HS</span>
         </span>
@@ -52,7 +52,7 @@ export function Sidebar() {
           );
         })}
 
-        <div className="my-2 border-t border-border" />
+        <div className="my-2 border-t border-glass-border/30" />
 
         {FEATURE_CATEGORIES.map((category) => {
           const open = openCategory === category.slug;
@@ -107,7 +107,7 @@ export function Sidebar() {
           );
         })}
       </nav>
-      <div className="border-t border-border p-3">
+      <div className="border-t border-glass-border/30 p-3">
         <Link
           href="/settings"
           className="flex items-center gap-3 rounded-full px-4 py-2.5 text-base font-medium text-foreground/80 transition-all duration-200 hover:translate-x-0.5 hover:bg-muted hover:text-foreground"

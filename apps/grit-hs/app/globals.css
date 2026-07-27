@@ -8,13 +8,15 @@
   with an all-green interactive palette on top — no yellow/teal — drawn
   from a 5-shade forest-green ramp (0A5C36 -> 1D2E28).
 
-  Surface treatment ("Liquid Glass"): cards/panels are frosted slate-toned
-  glass (backdrop-blur + translucency + a soft top highlight) floating over
-  the brown background, rather than flat opaque panels — see `--card`,
+  Surface treatment ("Liquid Glass"): cards/panels are frosted, saturated,
+  forest-green-tinted glass (backdrop-blur + backdrop-saturate + heavy
+  translucency + a bright top-edge highlight) floating over the brown
+  background, rather than flat opaque panels — see `--card`,
   `--glass-border`, `--glass-highlight` and `components/ui/card.tsx`. The
-  brown background and all-green interactive palette are unchanged; only the
-  surface material changed, deliberately keeping brown+green (not the
-  generic slate+red pairing a design-system lookup suggested).
+  glass tint is drawn from the same green family as `--primary`/`--accent`
+  (not slate/grey) so the material reads as "Grit green glass," not generic
+  frosted grey — deliberately keeping brown+green, not the generic
+  slate+red pairing a design-system lookup suggested.
 */
 
 @layer base {
@@ -22,8 +24,8 @@
     --background: 16 32% 17%;
     --foreground: 30 28% 92%;
 
-    /* Slate-700-ish glass surface, used translucent (bg-card/55) over the brown background */
-    --card: 217 19% 30%;
+    /* Forest-green glass surface, used translucent (bg-card/45) over the brown background */
+    --card: 150 30% 26%;
     --card-foreground: 30 28% 92%;
 
     --primary: 148 32% 42%;
@@ -50,9 +52,9 @@
     --input: 16 18% 32%;
     --ring: 148 32% 42%;
 
-    /* Cool slate-toned glass edge + top highlight, deliberately not green/brown */
-    --glass-border: 215 25% 70%;
-    --glass-highlight: 210 40% 96%;
+    /* Bright forest-green glass edge + minty top highlight — visible, not a hairline */
+    --glass-border: 148 55% 68%;
+    --glass-highlight: 145 60% 94%;
 
     --radius: 1.25rem;
 
@@ -64,8 +66,8 @@
     --background: 16 30% 9%;
     --foreground: 30 22% 88%;
 
-    /* Slate-900-ish glass surface */
-    --card: 222 24% 13%;
+    /* Forest-green glass surface, deepened for near-black background */
+    --card: 152 26% 15%;
     --card-foreground: 30 22% 88%;
 
     --primary: 148 26% 40%;
@@ -92,15 +94,15 @@
     --input: 16 14% 21%;
     --ring: 148 26% 40%;
 
-    --glass-border: 215 20% 58%;
-    --glass-highlight: 210 40% 92%;
+    --glass-border: 148 50% 58%;
+    --glass-highlight: 145 55% 90%;
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --background: 16 30% 9%;
       --foreground: 30 22% 88%;
-      --card: 222 24% 13%;
+      --card: 152 26% 15%;
       --card-foreground: 30 22% 88%;
       --primary: 148 26% 40%;
       --primary-foreground: 30 25% 95%;
@@ -117,8 +119,8 @@
       --border: 16 14% 21%;
       --input: 16 14% 21%;
       --ring: 148 26% 40%;
-      --glass-border: 215 20% 58%;
-      --glass-highlight: 210 40% 92%;
+      --glass-border: 148 50% 58%;
+      --glass-highlight: 145 55% 90%;
     }
   }
 

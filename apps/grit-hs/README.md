@@ -32,6 +32,14 @@
   supervisor has no account), a printable PDF summary for the Hours
   Logger, and two more registry features converted from "coming soon" to
   real, fully client-side tools (#4 4-Year Planner, #17 License Tracker).
+- **Round 4** (done): a "Liquid Glass" surface pivot — cards, sidebar, and
+  header are now translucent, blurred, slate-edged glass panels floating
+  over the same brown background/green interactive palette (palette
+  unchanged, only the surface material) — plus 4 new visualization/
+  gamification features: a Skill Coverage radar chart on `/roadmap`, a
+  12-week activity heatmap in the Hours Logger, a dashboard "Focus Mode"
+  toggle, and a new bonus feature (#31) Track Leaderboard. See `CLAUDE.md`
+  for exactly what was scoped out of that round's larger brainstorm and why.
 
 ## ⚠️ No real backend is connected in this environment
 

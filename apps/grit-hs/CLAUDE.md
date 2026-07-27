@@ -41,6 +41,15 @@ it), and a credential review/`is_verified` flow.
   interactive family (primary/secondary/accent) layered on top — no yellow,
   no teal, no generic blue SaaS blue. Defined as CSS custom properties in
   `app/globals.css`, themed for both light and dark.
+- Surface material ("Liquid Glass"): cards, the sidebar, and the header are
+  frosted slate-toned glass — translucent (`bg-card/55` etc.), blurred
+  (`backdrop-blur-xl`), with a cool slate `--glass-border` edge and a subtle
+  `--glass-highlight` top tint — floating over the opaque brown background,
+  rather than flat opaque panels. This was a deliberate pivot: a generic
+  design-system lookup suggested a slate+red "Liquid Glass" pairing; the
+  glass *material* was adopted but the palette was not — brown+green stays,
+  slate is used only for glass surfaces/borders, never as a primary color.
+  See `components/ui/card.tsx` and the `--card`/`--glass-*` tokens.
 - UI components: rounded cards and pill-shaped buttons/nav (`--radius`),
   hover-lift on cards, hover/press scale on buttons, clean serif/sans type
   hierarchy (`--font-display` / `--font-sans`), soft background fills.
@@ -74,7 +83,7 @@ it), and a credential review/`is_verified` flow.
 - Never write hardcoded inline secret keys; use environment variables
   (`process.env`).
 
-## Feature Roadmap (30 features, 9 categories)
+## Feature Roadmap (30 features + 1 bonus, 9 categories)
 
 Status legend: **live** = real client-side logic against real seed data,
 **mock** = working UI with clearly-labeled sample data (no real backend/API
@@ -130,3 +139,37 @@ behind it yet), **planned** = nav entry + "coming soon" card only.
    28. Near-Peer Mentor Matcher — **mock**
    29. Counselor & Advisor Export Hub — planned
    30. Parent Read-Only Dashboard — planned
+   31. Track Leaderboard (bonus, not in the original 30) — **mock**,
+       anonymized sample peers ranked by XP alongside the real student XP
+
+## Round 4: visualization + gamification additions
+
+From a later brainstorm of ~16 ideas (high-tech visuals, social/competition,
+gamification, logistics), 4 were built, honestly scoped as real widgets
+against existing data rather than new backend surface area:
+
+- **Skill Coverage Radar Chart** (`components/roadmap/skill-radar-chart.tsx`)
+  — hand-rolled SVG radar on `/roadmap`, one axis per milestone category,
+  percent-complete computed from the same template + derive-status logic
+  the Milestone Matrix already uses.
+- **Hours Activity Heatmap** (`components/features/hours-heatmap.tsx`) — a
+  12-week GitHub-style calendar heatmap inside the Hours Logger, colored by
+  hours logged per day from the same `entries` state (real or sample,
+  matching whichever the logger is already showing).
+- **Focus Mode** (`components/dashboard/focus-mode.tsx`) — a dashboard
+  toggle that collapses the 3 stat cards down to just the next 2 incomplete
+  milestones, for a distraction-free "what do I do right now" view.
+- **Track Leaderboard** (#31 above).
+
+Explicitly **not built** from that same brainstorm, and why: AI-generated
+mentor avatars (needs an image-gen API, none configured), verified
+cohort/social matching and an alumni showcase feed (both need real user
+accounts and moderation, not just UI), CTSO AI-judge mock practice (needs a
+real LLM judging rubric, high fabrication risk without one), an
+informational-interview booking marketplace (two-sided marketplace, out of
+scope for a solo-student app), a minor work-permit form generator (risk of
+confidently fabricating state-specific legal forms), a literal 3D/WebGL
+skill tree, and a QR code for the hours-verification link (needs a new
+dependency; deferred, not declined). Car license + job board ideas from
+that list were already covered by existing features #17 and #14 and were
+not rebuilt.

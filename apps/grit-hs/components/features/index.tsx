@@ -15,6 +15,7 @@ import { SummerPrograms } from "./summer-programs";
 import { MentorMatcher } from "./mentor-matcher";
 import { FourYearPlanner } from "./four-year-planner";
 import { LicenseTracker } from "./license-tracker";
+import { TrackLeaderboard } from "./track-leaderboard";
 
 export const FEATURE_COMPONENTS: Record<string, ComponentType> = {
   "gpa-calculator": GpaCalculator,
@@ -33,4 +34,5 @@ export const FEATURE_COMPONENTS: Record<string, ComponentType> = {
   "mentor-matcher": MentorMatcher,
   "four-year-planner": FourYearPlanner,
   "license-tracker": LicenseTracker,
+  "track-leaderboard": TrackLeaderboard,
 };

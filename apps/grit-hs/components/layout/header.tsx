@@ -16,7 +16,7 @@ export function Header({
     .toUpperCase();
 
   return (
-    <header className="flex h-20 shrink-0 items-center justify-between border-b border-border bg-background px-6 print:hidden">
+    <header className="sticky top-0 z-10 flex h-20 shrink-0 items-center justify-between border-b border-glass-border/20 bg-card/40 px-6 backdrop-blur-xl print:hidden">
       <div>
         <p className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
           Class of 2030 &middot; Track Cohort

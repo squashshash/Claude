@@ -277,6 +277,13 @@ export const FEATURE_CATEGORIES: FeatureCategory[] = [
         blurb: "Safety, logistics, and deadlines — visible, never editable.",
         status: "planned",
       },
+      {
+        slug: "track-leaderboard",
+        number: 31,
+        title: "Track Leaderboard",
+        blurb: "See how your XP and streak stack up against sample peers on your track.",
+        status: "mock",
+      },
     ],
   },
 ];

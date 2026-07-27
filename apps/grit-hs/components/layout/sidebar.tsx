@@ -26,7 +26,7 @@ export function Sidebar() {
   );
 
   return (
-    <aside className="hidden w-72 shrink-0 flex-col border-r border-border bg-card md:flex print:hidden">
+    <aside className="hidden w-72 shrink-0 flex-col border-r border-glass-border/20 bg-card/60 backdrop-blur-xl md:flex print:hidden">
       <div className="flex h-20 items-center gap-2 border-b border-border px-6">
         <span className="font-display text-2xl font-bold tracking-tight text-primary">
           Grit <span className="text-accent">HS</span>

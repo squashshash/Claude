@@ -6,6 +6,7 @@ import { Eraser, Stethoscope, HeartHandshake, Users, Info, Printer } from "lucid
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { HoursHeatmap } from "./hours-heatmap";
 
 type HoursCategory = "clinical" | "volunteer" | "shadowing";
 
@@ -287,6 +288,16 @@ export function HoursLogger() {
           );
         })}
       </div>
+
+      <Card className="print:hidden">
+        <CardHeader>
+          <CardTitle>Activity</CardTitle>
+          <CardDescription>Darker squares mean more hours logged that day.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <HoursHeatmap entries={entries.map((e) => ({ date: e.date, hours: e.hours }))} />
+        </CardContent>
+      </Card>
 
       <Card className="print:hidden">
         <CardContent className="p-5">

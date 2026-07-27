@@ -7,6 +7,14 @@
   generic SaaS palette. Coffee-brown base (a warm, dark umber background)
   with an all-green interactive palette on top — no yellow/teal — drawn
   from a 5-shade forest-green ramp (0A5C36 -> 1D2E28).
+
+  Surface treatment ("Liquid Glass"): cards/panels are frosted slate-toned
+  glass (backdrop-blur + translucency + a soft top highlight) floating over
+  the brown background, rather than flat opaque panels — see `--card`,
+  `--glass-border`, `--glass-highlight` and `components/ui/card.tsx`. The
+  brown background and all-green interactive palette are unchanged; only the
+  surface material changed, deliberately keeping brown+green (not the
+  generic slate+red pairing a design-system lookup suggested).
 */
 
 @layer base {
@@ -14,7 +22,8 @@
     --background: 16 32% 17%;
     --foreground: 30 28% 92%;
 
-    --card: 16 26% 22%;
+    /* Slate-700-ish glass surface, used translucent (bg-card/55) over the brown background */
+    --card: 217 19% 30%;
     --card-foreground: 30 28% 92%;
 
     --primary: 148 32% 42%;
@@ -41,6 +50,10 @@
     --input: 16 18% 32%;
     --ring: 148 32% 42%;
 
+    /* Cool slate-toned glass edge + top highlight, deliberately not green/brown */
+    --glass-border: 215 25% 70%;
+    --glass-highlight: 210 40% 96%;
+
     --radius: 1.25rem;
 
     --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
@@ -51,7 +64,8 @@
     --background: 16 30% 9%;
     --foreground: 30 22% 88%;
 
-    --card: 16 24% 12%;
+    /* Slate-900-ish glass surface */
+    --card: 222 24% 13%;
     --card-foreground: 30 22% 88%;
 
     --primary: 148 26% 40%;
@@ -77,13 +91,16 @@
     --border: 16 14% 21%;
     --input: 16 14% 21%;
     --ring: 148 26% 40%;
+
+    --glass-border: 215 20% 58%;
+    --glass-highlight: 210 40% 92%;
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --background: 16 30% 9%;
       --foreground: 30 22% 88%;
-      --card: 16 24% 12%;
+      --card: 222 24% 13%;
       --card-foreground: 30 22% 88%;
       --primary: 148 26% 40%;
       --primary-foreground: 30 25% 95%;
@@ -100,6 +117,8 @@
       --border: 16 14% 21%;
       --input: 16 14% 21%;
       --ring: 148 26% 40%;
+      --glass-border: 215 20% 58%;
+      --glass-highlight: 210 40% 92%;
     }
   }
 

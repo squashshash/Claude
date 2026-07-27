@@ -1,17 +1,26 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { getRoadmapTemplate } from "@/lib/roadmap/templates";
 import { deriveMilestoneStatus } from "@/lib/roadmap/derive-status";
-import { CAREER_TRACK_LABELS, GRADE_LEVEL_LABELS } from "@/lib/constants";
+import { CAREER_TRACK_LABELS, GRADE_LEVEL_LABELS, MILESTONE_CATEGORY_LABELS } from "@/lib/constants";
 import { MOCK_STUDENT } from "@/lib/mock-data";
+import { FocusModeToggle, type NextUpItem } from "@/components/dashboard/focus-mode";
 
 export default function DashboardPage() {
   const template = getRoadmapTemplate(MOCK_STUDENT.targetCareer);
-  const statuses = template.milestones.map((m) =>
-    deriveMilestoneStatus(m, MOCK_STUDENT.currentGrade, MOCK_STUDENT.age, MOCK_STUDENT.state)
-  );
-  const completed = statuses.filter((s) => s === "completed").length;
-  const overallPct = Math.round((completed / statuses.length) * 100);
+  const withStatus = template.milestones.map((m) => ({
+    milestone: m,
+    status: deriveMilestoneStatus(m, MOCK_STUDENT.currentGrade, MOCK_STUDENT.age, MOCK_STUDENT.state),
+  }));
+  const completed = withStatus.filter((m) => m.status === "completed").length;
+  const overallPct = Math.round((completed / withStatus.length) * 100);
+
+  const nextUp: NextUpItem[] = withStatus
+    .filter((m) => m.status === "in_progress" || m.status === "not_started")
+    .slice(0, 2)
+    .map(({ milestone }) => ({
+      title: milestone.title,
+      description: milestone.description,
+      category: MILESTONE_CATEGORY_LABELS[milestone.category],
+    }));
 
   return (
     <div className="flex flex-col gap-6">
@@ -25,31 +34,13 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardDescription className="text-base">Overall roadmap progress</CardDescription>
-            <CardTitle className="text-3xl">{overallPct}%</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Progress value={overallPct} />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardDescription className="text-base">XP earned</CardDescription>
-            <CardTitle className="text-3xl">{MOCK_STUDENT.xpPoints.toLocaleString()}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardDescription className="text-base">Milestones completed</CardDescription>
-            <CardTitle className="text-3xl">
-              {completed} / {statuses.length}
-            </CardTitle>
-          </CardHeader>
-        </Card>
-      </div>
+      <FocusModeToggle
+        overallPct={overallPct}
+        xp={MOCK_STUDENT.xpPoints}
+        completed={completed}
+        total={withStatus.length}
+        nextUp={nextUp}
+      />
     </div>
   );
 }

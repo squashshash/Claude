@@ -11,35 +11,35 @@
 
 @layer base {
   :root {
-    --background: 14 26% 29%;
-    --foreground: 30 30% 93%;
+    --background: 16 32% 17%;
+    --foreground: 30 28% 92%;
 
-    --card: 14 22% 34%;
-    --card-foreground: 30 30% 93%;
+    --card: 16 26% 22%;
+    --card-foreground: 30 28% 92%;
 
-    --primary: 148 30% 55%;
-    --primary-foreground: 14 26% 14%;
+    --primary: 148 32% 42%;
+    --primary-foreground: 30 30% 96%;
 
-    /* 18392B — Dark green */
-    --secondary: 155 41% 16%;
+    /* 1D2E28 — Gunmetal green */
+    --secondary: 159 27% 11%;
     --secondary-foreground: 30 30% 95%;
 
-    /* 0A5C36 — Lighthouse green */
-    --accent: 152 80% 20%;
+    /* 0F5132 — Castleton green, darkened further */
+    --accent: 151 69% 13%;
     --accent-foreground: 30 30% 96%;
 
-    --muted: 14 18% 40%;
-    --muted-foreground: 30 18% 78%;
+    --muted: 16 20% 30%;
+    --muted-foreground: 30 16% 76%;
 
-    --destructive: 4 62% 55%;
+    --destructive: 4 62% 48%;
     --destructive-foreground: 30 30% 96%;
 
-    --locked: 14 14% 42%;
-    --locked-foreground: 30 12% 74%;
+    --locked: 16 16% 32%;
+    --locked-foreground: 30 12% 72%;
 
-    --border: 14 16% 42%;
-    --input: 14 16% 42%;
-    --ring: 148 30% 55%;
+    --border: 16 18% 32%;
+    --input: 16 18% 32%;
+    --ring: 148 32% 42%;
 
     --radius: 1.25rem;
 
@@ -48,58 +48,58 @@
   }
 
   :root[data-theme="dark"] {
-    --background: 14 24% 15%;
-    --foreground: 30 25% 90%;
+    --background: 16 30% 9%;
+    --foreground: 30 22% 88%;
 
-    --card: 14 22% 19%;
-    --card-foreground: 30 25% 90%;
+    --card: 16 24% 12%;
+    --card-foreground: 30 22% 88%;
 
-    --primary: 148 30% 62%;
-    --primary-foreground: 14 24% 10%;
+    --primary: 148 26% 40%;
+    --primary-foreground: 30 25% 95%;
 
-    /* 18392B lightened for legibility against a near-black background */
-    --secondary: 155 30% 40%;
-    --secondary-foreground: 14 24% 10%;
+    /* 1D2E28 — Gunmetal green, lightened just enough to read on near-black */
+    --secondary: 159 22% 24%;
+    --secondary-foreground: 30 25% 92%;
 
-    /* 0A5C36 lightened for legibility against a near-black background */
-    --accent: 152 55% 45%;
-    --accent-foreground: 14 24% 10%;
+    /* 0F5132 — Castleton green, lightened just enough to read on near-black */
+    --accent: 151 55% 26%;
+    --accent-foreground: 30 25% 95%;
 
-    --muted: 14 16% 23%;
-    --muted-foreground: 30 12% 68%;
+    --muted: 16 16% 17%;
+    --muted-foreground: 30 12% 65%;
 
-    --destructive: 4 58% 55%;
-    --destructive-foreground: 14 24% 10%;
+    --destructive: 4 54% 48%;
+    --destructive-foreground: 30 25% 95%;
 
-    --locked: 14 14% 25%;
-    --locked-foreground: 30 8% 58%;
+    --locked: 16 14% 19%;
+    --locked-foreground: 30 8% 55%;
 
-    --border: 14 14% 27%;
-    --input: 14 14% 27%;
-    --ring: 148 30% 62%;
+    --border: 16 14% 21%;
+    --input: 16 14% 21%;
+    --ring: 148 26% 40%;
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --background: 14 24% 15%;
-      --foreground: 30 25% 90%;
-      --card: 14 22% 19%;
-      --card-foreground: 30 25% 90%;
-      --primary: 148 30% 62%;
-      --primary-foreground: 14 24% 10%;
-      --secondary: 155 30% 40%;
-      --secondary-foreground: 14 24% 10%;
-      --accent: 152 55% 45%;
-      --accent-foreground: 14 24% 10%;
-      --muted: 14 16% 23%;
-      --muted-foreground: 30 12% 68%;
-      --destructive: 4 58% 55%;
-      --destructive-foreground: 14 24% 10%;
-      --locked: 14 14% 25%;
-      --locked-foreground: 30 8% 58%;
-      --border: 14 14% 27%;
-      --input: 14 14% 27%;
-      --ring: 148 30% 62%;
+      --background: 16 30% 9%;
+      --foreground: 30 22% 88%;
+      --card: 16 24% 12%;
+      --card-foreground: 30 22% 88%;
+      --primary: 148 26% 40%;
+      --primary-foreground: 30 25% 95%;
+      --secondary: 159 22% 24%;
+      --secondary-foreground: 30 25% 92%;
+      --accent: 151 55% 26%;
+      --accent-foreground: 30 25% 95%;
+      --muted: 16 16% 17%;
+      --muted-foreground: 30 12% 65%;
+      --destructive: 4 54% 48%;
+      --destructive-foreground: 30 25% 95%;
+      --locked: 16 14% 19%;
+      --locked-foreground: 30 8% 55%;
+      --border: 16 14% 21%;
+      --input: 16 14% 21%;
+      --ring: 148 26% 40%;
     }
   }
 
@@ -110,6 +110,11 @@
 
   * {
     @apply border-border;
+  }
+
+  input[type="range"],
+  input[type="checkbox"] {
+    accent-color: hsl(var(--accent));
   }
 
   body {

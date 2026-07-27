@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eraser, Stethoscope, HeartHandshake, Users } from "lucide-react";
+import { Eraser, Stethoscope, HeartHandshake, Users, Info } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -101,14 +101,49 @@ const DEFAULT_ENTRIES: HoursEntry[] = [
   },
 ];
 
+interface DbHoursRow {
+  id: string;
+  category: HoursCategory;
+  supervisor_name: string;
+  hours: number;
+  date: string;
+  notes: string | null;
+}
+
 export function HoursLogger() {
   const [entries, setEntries] = useState<HoursEntry[]>(DEFAULT_ENTRIES);
+  const [isReal, setIsReal] = useState(false);
   const [category, setCategory] = useState<HoursCategory>("clinical");
   const [supervisorName, setSupervisorName] = useState("");
+  const [supervisorEmail, setSupervisorEmail] = useState("");
   const [hours, setHours] = useState("2");
   const [date, setDate] = useState("");
   const [notes, setNotes] = useState("");
   const [signature, setSignature] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/hours")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((body) => {
+        if (!body?.entries) return;
+        setEntries(
+          (body.entries as DbHoursRow[]).map((row) => ({
+            id: row.id,
+            category: row.category,
+            supervisorName: row.supervisor_name,
+            hours: Number(row.hours),
+            date: row.date,
+            notes: row.notes ?? "",
+            signature: null,
+          }))
+        );
+        setIsReal(true);
+      })
+      .catch(() => {
+        // No project configured / not authenticated — stick with the local demo entries.
+      });
+  }, []);
 
   const totals = entries.reduce<Record<HoursCategory, number>>(
     (acc, e) => {
@@ -118,30 +153,89 @@ export function HoursLogger() {
     { clinical: 0, volunteer: 0, shadowing: 0 }
   );
 
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!supervisorName || !date) return;
-    setEntries((prev) => [
-      {
-        id: crypto.randomUUID(),
-        category,
-        supervisorName,
-        hours: Number(hours) || 0,
-        date,
-        notes,
-        signature,
-      },
-      ...prev,
-    ]);
+  const resetForm = () => {
     setSupervisorName("");
+    setSupervisorEmail("");
     setHours("2");
     setDate("");
     setNotes("");
     setSignature(null);
   };
 
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supervisorName || !date) return;
+    setNotice(null);
+
+    const localEntry: HoursEntry = {
+      id: crypto.randomUUID(),
+      category,
+      supervisorName,
+      hours: Number(hours) || 0,
+      date,
+      notes,
+      signature,
+    };
+
+    if (isReal) {
+      try {
+        const res = await fetch("/api/hours", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            category,
+            supervisorName,
+            supervisorEmail,
+            hours: Number(hours) || 0,
+            date,
+            notes,
+          }),
+        });
+        const body = await res.json();
+        if (!res.ok) {
+          setNotice(body.error ?? "Couldn't save to your account — kept locally instead.");
+          setEntries((prev) => [localEntry, ...prev]);
+        } else {
+          const row: DbHoursRow = body.entry;
+          setEntries((prev) => [
+            {
+              id: row.id,
+              category: row.category,
+              supervisorName: row.supervisor_name,
+              hours: Number(row.hours),
+              date: row.date,
+              notes: row.notes ?? "",
+              signature, // kept for this session only — not persisted (no column for it yet)
+            },
+            ...prev,
+          ]);
+        }
+      } catch {
+        setNotice("Couldn't reach the server — kept locally instead.");
+        setEntries((prev) => [localEntry, ...prev]);
+      }
+    } else {
+      setEntries((prev) => [localEntry, ...prev]);
+    }
+
+    resetForm();
+  };
+
   return (
     <div className="flex flex-col gap-6">
+      <Card>
+        <CardContent className="flex items-start gap-3 p-4 text-sm text-muted-foreground">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
+          {isReal
+            ? "Signed in — new entries save to your account. The signature capture is session-only for now; there's no column to persist it to yet."
+            : "Not connected to a real account here, so entries are local to this browser session."}
+        </CardContent>
+      </Card>
+
+      <div className="flex items-center gap-2">
+        <Badge variant={isReal ? "default" : "locked"}>{isReal ? "Your data" : "Sample data"}</Badge>
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-3">
         {(Object.keys(CATEGORY_META) as HoursCategory[]).map((c) => {
           const { label, icon: Icon } = CATEGORY_META[c];
@@ -185,6 +279,15 @@ export function HoursLogger() {
               />
             </label>
             <label className="flex flex-col gap-1 text-sm">
+              <span className="font-medium text-muted-foreground">Supervisor email</span>
+              <input
+                type="email"
+                value={supervisorEmail}
+                onChange={(e) => setSupervisorEmail(e.target.value)}
+                className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none"
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-sm">
               <span className="font-medium text-muted-foreground">Hours</span>
               <input
                 type="number"
@@ -216,6 +319,7 @@ export function HoursLogger() {
             <div className="sm:col-span-2">
               <SignaturePad onChange={setSignature} />
             </div>
+            {notice && <p className="text-sm text-muted-foreground sm:col-span-2">{notice}</p>}
             <Button type="submit" className="w-fit gap-2 sm:col-span-2">
               Log hours
             </Button>

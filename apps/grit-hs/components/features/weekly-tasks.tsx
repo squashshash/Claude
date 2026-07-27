@@ -5,9 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { PartyPopper, Check } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 import { MOCK_STUDENT } from "@/lib/mock-data";
 import { getRoadmapTemplate } from "@/lib/roadmap/templates";
 import { deriveMilestoneStatus } from "@/lib/roadmap/derive-status";
+import { milestoneFromDb } from "@/lib/roadmap/from-db";
+import { useDashboardData } from "@/lib/hooks/use-dashboard-data";
 import { MILESTONE_CATEGORY_LABELS, type MilestoneCategory } from "@/lib/constants";
 import type { MilestoneTemplate } from "@/types/roadmap";
 
@@ -53,11 +56,16 @@ function buildTasks(milestones: MilestoneTemplate[]): Task[] {
 }
 
 export function WeeklyTasks() {
-  const template = getRoadmapTemplate(MOCK_STUDENT.targetCareer);
-  const inProgress = template.milestones.filter(
-    (m) =>
-      deriveMilestoneStatus(m, MOCK_STUDENT.currentGrade, MOCK_STUDENT.age, MOCK_STUDENT.state) === "in_progress"
-  );
+  const { data } = useDashboardData();
+  const isReal = Boolean(data?.authenticated && data.roadmap);
+
+  const inProgress = isReal
+    ? data!.milestones!.filter((m) => m.status === "in_progress").map(milestoneFromDb)
+    : getRoadmapTemplate(MOCK_STUDENT.targetCareer).milestones.filter(
+        (m) =>
+          deriveMilestoneStatus(m, MOCK_STUDENT.currentGrade, MOCK_STUDENT.age, MOCK_STUDENT.state) ===
+          "in_progress"
+      );
   const tasks = useMemo(() => buildTasks(inProgress), [inProgress]);
   const [done, setDone] = useState<Set<string>>(new Set());
 
@@ -76,7 +84,10 @@ export function WeeklyTasks() {
       <Card>
         <CardContent className="flex flex-col gap-3 p-5">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-muted-foreground">This week&apos;s progress</span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-muted-foreground">This week&apos;s progress</span>
+              <Badge variant={isReal ? "default" : "locked"}>{isReal ? "Your data" : "Sample data"}</Badge>
+            </div>
             <span className="font-display text-2xl font-bold">{pct}%</span>
           </div>
           <Progress value={pct} className="h-3" />

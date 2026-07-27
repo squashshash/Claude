@@ -23,9 +23,18 @@ detect missing env vars and return a clear `501` instead of crashing; the
 middleware skips auth enforcement entirely until
 `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY` are set. See the
 main README's "No real backend is connected" section for exact details and
-setup steps. The 10 "live" dashboard features below still read
-`lib/mock-data.ts`, not real queries — that's the next step once a project
-exists.
+setup steps.
+
+5 of the 10 "live" dashboard features (Streak/Badges, Resume Builder,
+Weekly Tasks, Hours Logger, Credential Vault) now try a real API first
+(`/api/dashboard/state`, `/api/hours`, `/api/credentials`) and fall back to
+`lib/mock-data.ts` / local state when unauthenticated, with a "Your data" /
+"Sample data" badge always showing which is active. The other 5 (GPA
+calculator, AP/IB optimizer, certification rulebook, CTSO strategy engine,
+cold-outreach template) don't need per-user persistence and were left as
+pure client-side tools. Not built yet: the hours-verification-link
+endpoint, persisting the hours-logger's signature capture (no column for
+it), and a credential review/`is_verified` flow.
 
 ## Design System & Aesthetic ("Grit")
 - Color palette: dark coffee-brown background with a monochrome forest-green
@@ -101,14 +110,16 @@ behind it yet), **planned** = nav entry + "coming soon" card only.
    20. AI-Powered Cold Outreach Generator — **mock** (template-based
        mail-merge for now; wiring an actual LLM call is a Phase 3 item once
        an AI SDK key is configured)
-   21. Clinical & Volunteer Hours Verification Logger — **live** (local
-       state only — not yet persisted to `hours_logged` in Supabase)
+   21. Clinical & Volunteer Hours Verification Logger — **live** (tries
+       `/api/hours` first, falls back to local state; the signature
+       capture itself is still session-only — no column for it yet)
    22. High-Yield Summer Program Directory — **mock**
 8. Digital Portfolio & Resume Tools
    23. Dynamic "Grit" Resume Builder — **live**
    24. Public Student Portfolio Handle (`grit.hs/student`) — planned
-   25. Digital Credential Vault — **live** (local state — not yet wired to
-       Supabase Storage / `user_credentials`)
+   25. Digital Credential Vault — **live** (tries `/api/credentials`,
+       which really does upload to Supabase Storage + `user_credentials`;
+       falls back to local-only preview when unauthenticated)
 9. Execution, Mentorship & Accountability
    26. Weekly Task Deconstructor — **live**
    27. "Streak & Grit" Gamified Score System — **live**

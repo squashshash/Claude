@@ -1,0 +1,78 @@
+import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { z } from "zod";
+
+const hoursEntrySchema = z.object({
+  category: z.enum(["clinical", "volunteer", "shadowing"]),
+  supervisorName: z.string().min(1),
+  supervisorEmail: z.string().email().optional().or(z.literal("")),
+  hours: z.number().positive(),
+  date: z.string().min(1),
+  notes: z.string().optional(),
+});
+
+function notConfigured() {
+  return NextResponse.json(
+    { error: "No Supabase project is configured in this environment." },
+    { status: 501 }
+  );
+}
+
+function isConfigured() {
+  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+}
+
+export async function GET() {
+  if (!isConfigured()) return notConfigured();
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+
+  const { data, error } = await supabase
+    .from("hours_logged")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("date", { ascending: false });
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ entries: data });
+}
+
+export async function POST(request: Request) {
+  if (!isConfigured()) return notConfigured();
+
+  const body = await request.json().catch(() => null);
+  const parsed = hoursEntrySchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.issues[0]?.message ?? "Invalid input" },
+      { status: 400 }
+    );
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+
+  const { data, error } = await supabase
+    .from("hours_logged")
+    .insert({
+      user_id: user.id,
+      category: parsed.data.category,
+      supervisor_name: parsed.data.supervisorName,
+      supervisor_email: parsed.data.supervisorEmail || "",
+      hours: parsed.data.hours,
+      date: parsed.data.date,
+      notes: parsed.data.notes ?? null,
+    })
+    .select()
+    .single();
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ entry: data }, { status: 201 });
+}

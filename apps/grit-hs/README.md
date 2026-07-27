@@ -18,6 +18,14 @@
   protected routes via middleware), the Summer -0 onboarding wizard, a real
   roadmap-generation API route, and an AI cold-outreach endpoint wired to
   the Vercel AI SDK.
+- **Real-data wiring** (done, structure-only — see below): the Streak/Badges,
+  Resume Builder, Weekly Tasks, Hours Logger, and Credential Vault features
+  now try a real Supabase-backed API first (`/api/dashboard/state`,
+  `/api/hours`, `/api/credentials`) and **fall back to `lib/mock-data.ts` /
+  local state automatically** when there's no signed-in user or no project
+  configured — so they stay demonstrable now and become real the moment
+  credentials exist. Each shows a "Your data" vs "Sample data" badge so
+  it's never ambiguous which one you're looking at.
 
 ## ⚠️ No real backend is connected in this environment
 
@@ -32,20 +40,29 @@ requires credentials this sandbox doesn't have. Concretely:
   those env vars are set, protected routes (`/dashboard`, `/roadmap`,
   `/features/*`, `/settings`, `/onboarding`) actually redirect unauthenticated
   visitors to `/login`.
-- `app/api/roadmap/generate/route.ts` and `app/api/outreach/generate/route.ts`
-  both check for their required env vars first and return a clear
-  `501 { error: "..." }` explaining exactly what's missing, rather than
-  crashing or faking a result. Verified by curl — see the response text for
-  the exact message.
-- The 10 "live" dashboard features (GPA calculator, hours logger, credential
-  vault, etc.) still read/write `lib/mock-data.ts` and local component
-  state, **not** the new Supabase tables. Wiring them to real queries is the
-  next logical step once a project exists.
+- `app/api/roadmap/generate/route.ts`, `app/api/outreach/generate/route.ts`,
+  `app/api/hours/route.ts`, and `app/api/credentials/route.ts` all check for
+  their required env vars first and return a clear `501 { error: "..." }`
+  explaining exactly what's missing, rather than crashing or faking a
+  result. Verified by curl — see the response text for the exact message.
+- 5 of the 10 "live" dashboard features (Streak/Badges, Resume Builder,
+  Weekly Tasks, Hours Logger, Credential Vault) try `/api/dashboard/state`,
+  `/api/hours`, or `/api/credentials` first and transparently fall back to
+  `lib/mock-data.ts` / local state when unauthenticated — verified by
+  screenshot, both API responses and the "Sample data" badges render as
+  expected. The other 5 (GPA calculator, AP/IB optimizer, certification
+  rulebook, CTSO strategy engine, cold-outreach template) don't need
+  per-user persistence to function, so they were left as-is.
+- The Hours Logger's signature-pad capture is **session-only** even when
+  "Your data" — there's no column on `hours_logged` to persist the drawn
+  signature to yet (a real implementation would upload it to Storage
+  alongside the credential files and store the path).
 
 To actually run this against a real backend: create a Supabase project, run
-both files in `supabase/migrations/` against it, copy `.env.local.example`
-to `.env.local` and fill in the values, and (optionally) add
-`ANTHROPIC_API_KEY` for live cold-outreach generation.
+all three files in `supabase/migrations/` against it in order (the third
+creates the `credentials` Storage bucket + its RLS policies), copy
+`.env.local.example` to `.env.local` and fill in the values, and
+(optionally) add `ANTHROPIC_API_KEY` for live cold-outreach generation.
 
 ## Stack
 
@@ -193,8 +210,12 @@ routes once a Supabase project is configured.
 
 ## Not yet built
 
-Wiring the 10 live dashboard features to real Supabase queries (they're
-still on `lib/mock-data.ts`), the hours-verification-link endpoint, the
-credential-upload-to-Storage endpoint, the remaining ~16 "coming soon"
-features from the registry, and a marketing/landing page. Next phase on
-request.
+The GPA calculator, AP/IB optimizer, certification rulebook, CTSO strategy
+engine, and cold-outreach template still don't persist anything (by
+design — none of them need to). The hours-verification-link endpoint
+(a supervisor confirming logged hours via an emailed link, using the
+service-role client since the supervisor has no account) and persisting
+the hours-logger signature to Storage are both unbuilt. So is a real
+`is_verified` review flow for uploaded credentials, the remaining ~16
+"coming soon" features from the registry, and a marketing/landing page.
+Next phase on request.

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { UploadCloud, FileText, Trash2, Globe, Lock } from "lucide-react";
+import { UploadCloud, FileText, Trash2, Globe, Lock, Info } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,46 +17,144 @@ interface Credential {
   isPublic: boolean;
 }
 
+interface DbCredentialRow {
+  id: string;
+  cert_name: string;
+  issue_date: string | null;
+  document_url: string | null;
+  is_public: boolean;
+  signedUrl: string | null;
+}
+
 export function CredentialVault() {
   const [credentials, setCredentials] = useState<Credential[]>([]);
+  const [isReal, setIsReal] = useState(false);
   const [certName, setCertName] = useState("");
   const [issueDate, setIssueDate] = useState("");
   const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/credentials")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((body) => {
+        if (!body?.credentials) return;
+        setCredentials(
+          (body.credentials as DbCredentialRow[]).map((row) => ({
+            id: row.id,
+            certName: row.cert_name,
+            issueDate: row.issue_date ?? "",
+            fileName: row.document_url?.split("/").pop() ?? "file",
+            previewUrl: row.signedUrl,
+            isImage: /\.(png|jpe?g|gif|webp)$/i.test(row.document_url ?? ""),
+            isPublic: row.is_public,
+          }))
+        );
+        setIsReal(true);
+      })
+      .catch(() => {
+        // No project configured / not authenticated — stick with local-only uploads.
+      });
+  }, []);
 
   const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) setPendingFile(file);
   };
 
-  const upload = (e: React.FormEvent) => {
+  const upload = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!pendingFile || !certName) return;
+    setNotice(null);
     const isImage = pendingFile.type.startsWith("image/");
-    setCredentials((prev) => [
-      {
-        id: crypto.randomUUID(),
-        certName,
-        issueDate,
-        fileName: pendingFile.name,
-        previewUrl: isImage ? URL.createObjectURL(pendingFile) : null,
-        isImage,
-        isPublic: false,
-      },
-      ...prev,
-    ]);
+    const localCredential: Credential = {
+      id: crypto.randomUUID(),
+      certName,
+      issueDate,
+      fileName: pendingFile.name,
+      previewUrl: isImage ? URL.createObjectURL(pendingFile) : null,
+      isImage,
+      isPublic: false,
+    };
+
+    if (isReal) {
+      setUploading(true);
+      try {
+        const formData = new FormData();
+        formData.set("file", pendingFile);
+        formData.set("certName", certName);
+        formData.set("issueDate", issueDate);
+        const res = await fetch("/api/credentials", { method: "POST", body: formData });
+        const body = await res.json();
+        if (!res.ok) {
+          setNotice(body.error ?? "Couldn't upload to your vault — kept locally instead.");
+          setCredentials((prev) => [localCredential, ...prev]);
+        } else {
+          const row: DbCredentialRow = body.credential;
+          setCredentials((prev) => [
+            {
+              id: row.id,
+              certName: row.cert_name,
+              issueDate: row.issue_date ?? "",
+              fileName: pendingFile.name,
+              previewUrl: row.signedUrl,
+              isImage,
+              isPublic: row.is_public,
+            },
+            ...prev,
+          ]);
+        }
+      } catch {
+        setNotice("Couldn't reach the server — kept locally instead.");
+        setCredentials((prev) => [localCredential, ...prev]);
+      } finally {
+        setUploading(false);
+      }
+    } else {
+      setCredentials((prev) => [localCredential, ...prev]);
+    }
+
     setCertName("");
     setIssueDate("");
     setPendingFile(null);
     (e.target as HTMLFormElement).reset();
   };
 
-  const togglePublic = (id: string) =>
-    setCredentials((prev) => prev.map((c) => (c.id === id ? { ...c, isPublic: !c.isPublic } : c)));
+  const togglePublic = async (id: string) => {
+    const target = credentials.find((c) => c.id === id);
+    if (!target) return;
+    const nextIsPublic = !target.isPublic;
+    setCredentials((prev) => prev.map((c) => (c.id === id ? { ...c, isPublic: nextIsPublic } : c)));
+
+    if (isReal) {
+      await fetch("/api/credentials", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, isPublic: nextIsPublic }),
+      }).catch(() => {
+        // best-effort — the optimistic UI update stands either way
+      });
+    }
+  };
 
   const remove = (id: string) => setCredentials((prev) => prev.filter((c) => c.id !== id));
 
   return (
     <div className="flex flex-col gap-6">
+      <Card>
+        <CardContent className="flex items-start gap-3 p-4 text-sm text-muted-foreground">
+          <Info className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
+          {isReal
+            ? "Signed in — uploads go to your account's private storage; the public toggle is real too."
+            : "Not connected to a real account here, so uploads stay local to this browser session."}
+        </CardContent>
+      </Card>
+
+      <div className="flex items-center gap-2">
+        <Badge variant={isReal ? "default" : "locked"}>{isReal ? "Your data" : "Sample data"}</Badge>
+      </div>
+
       <Card>
         <CardContent className="p-5">
           <form onSubmit={upload} className="grid gap-3 sm:grid-cols-2">
@@ -89,8 +187,9 @@ export function CredentialVault() {
                 className="rounded-md border border-input bg-background px-3 py-2 text-sm outline-none file:mr-2 file:rounded-full file:border-0 file:bg-primary file:px-3 file:py-1 file:text-primary-foreground"
               />
             </label>
-            <Button type="submit" className="w-fit gap-2 sm:col-span-2">
-              <UploadCloud className="h-4 w-4" /> Add to vault
+            {notice && <p className="text-sm text-muted-foreground sm:col-span-2">{notice}</p>}
+            <Button type="submit" disabled={uploading} className="w-fit gap-2 sm:col-span-2">
+              <UploadCloud className="h-4 w-4" /> {uploading ? "Uploading..." : "Add to vault"}
             </Button>
           </form>
         </CardContent>

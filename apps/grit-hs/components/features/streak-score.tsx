@@ -5,7 +5,9 @@ import { motion } from "framer-motion";
 import { Flame, Lock, Medal } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { MOCK_STUDENT } from "@/lib/mock-data";
+import { useDashboardData } from "@/lib/hooks/use-dashboard-data";
 
 const BADGES = [
   { threshold: 1000, name: "Trailhead" },
@@ -18,7 +20,9 @@ const BADGES = [
 export function StreakScore() {
   const [streak, setStreak] = useState(12);
   const [markedToday, setMarkedToday] = useState(false);
-  const xp = MOCK_STUDENT.xpPoints;
+  const { data } = useDashboardData();
+  const isReal = Boolean(data?.authenticated && data.profile);
+  const xp = isReal ? data!.profile!.xp_points : MOCK_STUDENT.xpPoints;
 
   const markToday = () => {
     if (markedToday) return;
@@ -46,7 +50,10 @@ export function StreakScore() {
         </Card>
         <Card>
           <CardContent className="flex flex-col items-center justify-center gap-2 p-6">
-            <p className="text-sm font-medium uppercase tracking-wide text-muted-foreground">Total XP</p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-medium uppercase tracking-wide text-muted-foreground">Total XP</p>
+              <Badge variant={isReal ? "default" : "locked"}>{isReal ? "Your data" : "Sample data"}</Badge>
+            </div>
             <p className="font-display text-4xl font-bold">{xp.toLocaleString()}</p>
             <p className="text-sm text-muted-foreground">
               {BADGES.filter((b) => xp >= b.threshold).length} of {BADGES.length} badges unlocked

@@ -13,6 +13,16 @@ export interface NextUpItem {
   category: string;
 }
 
+const statGridVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08 } },
+};
+
+const statCardVariants = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 300, damping: 26 } },
+};
+
 export function FocusModeToggle({
   overallPct,
   xp,
@@ -85,35 +95,41 @@ export function FocusModeToggle({
         ) : (
           <motion.div
             key="full"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2 }}
             className="grid gap-5 sm:grid-cols-3"
+            variants={statGridVariants}
+            initial="hidden"
+            animate="show"
+            exit="hidden"
           >
-            <Card>
-              <CardHeader>
-                <CardDescription className="text-base">Overall roadmap progress</CardDescription>
-                <CardTitle className="text-3xl">{overallPct}%</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Progress value={overallPct} />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardDescription className="text-base">XP earned</CardDescription>
-                <CardTitle className="text-3xl">{xp.toLocaleString()}</CardTitle>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardDescription className="text-base">Milestones completed</CardDescription>
-                <CardTitle className="text-3xl">
-                  {completed} / {total}
-                </CardTitle>
-              </CardHeader>
-            </Card>
+            <motion.div variants={statCardVariants}>
+              <Card>
+                <CardHeader>
+                  <CardDescription className="text-base">Overall roadmap progress</CardDescription>
+                  <CardTitle className="text-3xl">{overallPct}%</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Progress value={overallPct} />
+                </CardContent>
+              </Card>
+            </motion.div>
+            <motion.div variants={statCardVariants}>
+              <Card>
+                <CardHeader>
+                  <CardDescription className="text-base">XP earned</CardDescription>
+                  <CardTitle className="text-3xl">{xp.toLocaleString()}</CardTitle>
+                </CardHeader>
+              </Card>
+            </motion.div>
+            <motion.div variants={statCardVariants}>
+              <Card>
+                <CardHeader>
+                  <CardDescription className="text-base">Milestones completed</CardDescription>
+                  <CardTitle className="text-3xl">
+                    {completed} / {total}
+                  </CardTitle>
+                </CardHeader>
+              </Card>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -145,6 +145,19 @@
   }
 }
 
+/* Slow ambient drift for the background glow blobs behind the glass panels */
+@keyframes float-slow {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(24px, -32px) scale(1.08); }
+}
+
+/* One-shot diagonal light catching the glass on hover — see components/ui/card.tsx */
+@keyframes glass-sweep {
+  0% { transform: translateX(-160%) skewX(-12deg); opacity: 0; }
+  15% { opacity: 0.6; }
+  100% { transform: translateX(160%) skewX(-12deg); opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

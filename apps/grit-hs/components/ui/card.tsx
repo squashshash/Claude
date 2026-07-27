@@ -6,7 +6,7 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
     <div
       ref={ref}
       className={cn(
-        "relative overflow-hidden rounded-lg border border-glass-border/50 bg-card/40 bg-gradient-to-br from-glass-highlight/25 via-transparent to-transparent text-card-foreground shadow-[inset_0_1px_0_0_hsl(var(--glass-highlight)/0.3),0_8px_32px_-8px_rgba(0,0,0,0.55)] backdrop-blur-2xl backdrop-saturate-150 transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-glass-border/75 hover:bg-card/45 hover:shadow-[inset_0_1px_0_0_hsl(var(--glass-highlight)/0.4),0_16px_44px_-8px_rgba(0,0,0,0.65)]",
+        "relative overflow-hidden rounded-lg border border-glass-border/50 bg-card/40 bg-gradient-to-br from-glass-highlight/25 via-transparent to-transparent text-card-foreground shadow-[inset_0_1px_0_0_hsl(var(--glass-highlight)/0.3),0_8px_32px_-8px_rgba(0,0,0,0.55)] backdrop-blur-2xl backdrop-saturate-150 transition-all duration-200 ease-out after:pointer-events-none after:absolute after:inset-y-0 after:left-0 after:w-1/3 after:bg-gradient-to-r after:from-transparent after:via-glass-highlight/40 after:to-transparent after:opacity-0 after:content-[''] hover:-translate-y-0.5 hover:border-glass-border/75 hover:bg-card/45 hover:shadow-[inset_0_1px_0_0_hsl(var(--glass-highlight)/0.4),0_16px_44px_-8px_rgba(0,0,0,0.65)] hover:after:opacity-100 hover:after:[animation:glass-sweep_0.9s_ease-out]",
         className
       )}
       {...props}

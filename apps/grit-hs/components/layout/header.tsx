@@ -16,7 +16,7 @@ export function Header({
     .toUpperCase();
 
   return (
-    <header className="sticky top-0 z-10 flex h-20 shrink-0 items-center justify-between border-b border-glass-border/50 bg-card/30 px-6 shadow-[inset_0_-1px_0_0_hsl(var(--glass-highlight)/0.15)] backdrop-blur-2xl backdrop-saturate-150 print:hidden">
+    <header className="sticky top-0 z-10 flex h-20 shrink-0 items-center justify-between border-b border-glass-border/60 bg-card/15 px-6 shadow-[inset_0_-1px_0_0_hsl(var(--glass-highlight)/0.2)] backdrop-blur-2xl backdrop-saturate-200 print:hidden">
       <div>
         <p className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
           Class of 2030 &middot; Track Cohort

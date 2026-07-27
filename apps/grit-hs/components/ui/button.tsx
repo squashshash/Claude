@@ -4,12 +4,14 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-semibold transition-all duration-200 ease-out hover:scale-[1.04] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:hover:scale-100",
+  "relative overflow-hidden inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-semibold transition-all duration-200 ease-out before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-1/2 before:rounded-t-full before:bg-gradient-to-b before:from-white/40 before:to-transparent before:content-[''] hover:scale-[1.04] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:hover:scale-100",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        accent: "bg-accent text-accent-foreground hover:bg-accent/90",
+        default:
+          "bg-gradient-to-b from-primary to-primary/80 text-primary-foreground shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.35),0_2px_6px_-1px_rgba(0,0,0,0.35)] hover:brightness-110",
+        accent:
+          "bg-gradient-to-b from-accent to-accent/80 text-accent-foreground shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.35),0_2px_6px_-1px_rgba(0,0,0,0.35)] hover:brightness-110",
         outline: "border border-input bg-background hover:bg-muted",
         ghost: "hover:bg-muted",
         link: "text-primary underline-offset-4 hover:underline",

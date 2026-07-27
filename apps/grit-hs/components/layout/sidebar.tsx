@@ -26,7 +26,7 @@ export function Sidebar() {
   );
 
   return (
-    <aside className="relative z-10 hidden w-72 shrink-0 flex-col border-r border-glass-border/50 bg-card/35 shadow-[inset_-1px_0_0_0_hsl(var(--glass-highlight)/0.15)] backdrop-blur-2xl backdrop-saturate-150 md:flex print:hidden">
+    <aside className="relative z-10 hidden w-72 shrink-0 flex-col border-r border-glass-border/60 bg-card/18 shadow-[inset_-1px_0_0_0_hsl(var(--glass-highlight)/0.2)] backdrop-blur-2xl backdrop-saturate-200 md:flex print:hidden">
       <div className="flex h-20 items-center gap-2 border-b border-glass-border/30 px-6">
         <span className="bg-gradient-to-br from-primary to-accent bg-clip-text font-display text-2xl font-bold tracking-tight text-transparent">
           Grit

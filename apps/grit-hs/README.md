@@ -1,4 +1,4 @@
-# Pathfinder HS
+# Grit HS
 
 4-year career-specialization roadmap platform for high schoolers.
 
@@ -25,7 +25,7 @@ brief asked for.
 ## Running it
 
 ```bash
-cd apps/pathfinder-hs
+cd apps/grit-hs
 npm install
 npm run dev   # app currently redirects / -> /roadmap (no auth yet)
 ```
@@ -36,7 +36,7 @@ student) until Phase 3 wires real Supabase auth + queries.
 ## Proposed project structure
 
 ```
-apps/pathfinder-hs/
+apps/grit-hs/
 ├── middleware.ts                    # session refresh + protected routes
 ├── app/
 │   ├── layout.tsx                   # root layout, fonts, providers

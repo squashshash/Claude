@@ -25,18 +25,18 @@ export function YearColumn({
   const isCurrentYear = gradeLevel === currentGrade;
 
   return (
-    <div className="flex w-72 shrink-0 flex-col gap-3">
+    <div className="flex w-80 shrink-0 flex-col gap-3">
       <div className="flex items-baseline justify-between">
-        <h3 className="font-display text-base font-semibold">
+        <h3 className="font-display text-xl font-bold">
           {GRADE_LEVEL_LABELS[gradeLevel]}
         </h3>
         {isCurrentYear && (
-          <span className="text-xs font-medium uppercase tracking-wide text-accent">
+          <span className="animate-pulse text-sm font-bold uppercase tracking-wide text-accent">
             You are here
           </span>
         )}
       </div>
-      <Progress value={progressPct} />
+      <Progress value={progressPct} className="h-3" />
       <div className="flex flex-col gap-3">
         {milestones.map((milestone, i) => (
           <MilestoneCard

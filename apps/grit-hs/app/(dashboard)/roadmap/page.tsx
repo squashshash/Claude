@@ -9,11 +9,11 @@ export default function RoadmapPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <p className="text-xs font-medium uppercase tracking-wide text-accent">
+        <p className="text-sm font-semibold uppercase tracking-wide text-accent">
           {CAREER_TRACK_LABELS[MOCK_STUDENT.targetCareer]}
         </p>
-        <h1 className="font-display text-2xl font-semibold">4-Year Roadmap</h1>
-        <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{template.summary}</p>
+        <h1 className="font-display text-4xl font-bold">4-Year Roadmap</h1>
+        <p className="mt-2 max-w-2xl text-base text-muted-foreground">{template.summary}</p>
       </div>
       <MilestoneMatrix
         template={template}

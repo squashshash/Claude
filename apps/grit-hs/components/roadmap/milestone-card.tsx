@@ -47,15 +47,15 @@ export function MilestoneCard({
         status === "locked" ? "border-l-locked" : "border-l-primary"
       )}
     >
-      <CardContent className="flex flex-col gap-2 p-4">
+      <CardContent className="flex flex-col gap-2.5 p-5">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2 text-muted-foreground">
-            <Icon className="h-4 w-4" aria-hidden="true" />
+            <Icon className="h-5 w-5" aria-hidden="true" />
           </div>
           <Badge variant={STATUS_BADGE_VARIANT[status]}>{STATUS_LABEL[status]}</Badge>
         </div>
-        <p className="font-display text-sm font-semibold leading-snug">{milestone.title}</p>
-        <p className="text-xs leading-relaxed text-muted-foreground">{milestone.description}</p>
+        <p className="font-display text-base font-bold leading-snug">{milestone.title}</p>
+        <p className="text-sm leading-relaxed text-muted-foreground">{milestone.description}</p>
         {milestone.certRef && (
           <div className="pt-1">
             <AgeGateBadge certRef={milestone.certRef} studentAge={studentAge} studentState={studentState} />

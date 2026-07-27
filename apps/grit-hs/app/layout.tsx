@@ -3,7 +3,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "Pathfinder HS",
+  title: "Grit HS",
   description: "4-year career-specialization roadmaps for high schoolers.",
 };
 

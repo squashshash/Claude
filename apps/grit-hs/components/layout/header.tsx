@@ -16,16 +16,16 @@ export function Header({
     .toUpperCase();
 
   return (
-    <header className="flex h-16 shrink-0 items-center justify-between border-b border-border bg-background px-6">
+    <header className="flex h-20 shrink-0 items-center justify-between border-b border-border bg-background px-6">
       <div>
-        <p className="text-xs uppercase tracking-wide text-muted-foreground">
+        <p className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
           Class of 2030 &middot; Track Cohort
         </p>
       </div>
       <div className="flex items-center gap-4">
         <XpCounter xp={xp} />
-        <Avatar>
-          <AvatarFallback>{initials}</AvatarFallback>
+        <Avatar className="h-11 w-11">
+          <AvatarFallback className="text-base">{initials}</AvatarFallback>
         </Avatar>
       </div>
     </header>

@@ -1,4 +1,4 @@
--- Pathfinder HS — initial schema
+-- Grit HS — initial schema
 -- Tables: profiles, roadmaps, milestones, certifications, hours_logged, user_credentials
 
 create extension if not exists "pgcrypto";

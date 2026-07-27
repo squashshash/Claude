@@ -1,4 +1,4 @@
--- Pathfinder HS — career_track enum + certifications seed data
+-- Grit HS — career_track enum + certifications seed data
 -- Source: "Comprehensive Architectural Framework and Strategic Implementation
 -- Model for Early Secondary Career Specialization Platforms" research doc.
 -- Locks career_track to the 6 fully-specified tracks and seeds the

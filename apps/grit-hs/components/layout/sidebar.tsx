@@ -27,12 +27,12 @@ export function Sidebar() {
 
   return (
     <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-card md:flex">
-      <div className="flex h-16 items-center gap-2 border-b border-border px-6">
-        <span className="font-display text-lg font-semibold tracking-tight text-primary">
-          Pathfinder <span className="text-accent">HS</span>
+      <div className="flex h-20 items-center gap-2 border-b border-border px-6">
+        <span className="font-display text-2xl font-bold tracking-tight text-primary">
+          Grit <span className="text-accent">HS</span>
         </span>
       </div>
-      <nav className="flex flex-1 flex-col gap-1 p-3">
+      <nav className="flex flex-1 flex-col gap-1.5 p-3">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname?.startsWith(href + "/");
           return (
@@ -40,13 +40,13 @@ export function Sidebar() {
               key={href}
               href={href}
               className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                "flex items-center gap-3 rounded-full px-4 py-2.5 text-base font-medium transition-all duration-200 hover:translate-x-0.5",
                 active
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-primary text-primary-foreground shadow-sm"
                   : "text-foreground/80 hover:bg-muted hover:text-foreground"
               )}
             >
-              <Icon className="h-4 w-4" aria-hidden="true" />
+              <Icon className="h-5 w-5" aria-hidden="true" />
               {label}
             </Link>
           );
@@ -55,9 +55,9 @@ export function Sidebar() {
       <div className="border-t border-border p-3">
         <Link
           href="/settings"
-          className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-muted hover:text-foreground"
+          className="flex items-center gap-3 rounded-full px-4 py-2.5 text-base font-medium text-foreground/80 transition-all duration-200 hover:translate-x-0.5 hover:bg-muted hover:text-foreground"
         >
-          <Settings className="h-4 w-4" aria-hidden="true" />
+          <Settings className="h-5 w-5" aria-hidden="true" />
           Settings
         </Link>
       </div>

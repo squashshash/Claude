@@ -16,20 +16,20 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="font-display text-2xl font-semibold">
+        <h1 className="font-display text-4xl font-bold">
           Welcome back, {MOCK_STUDENT.fullName.split(" ")[0]}
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-2 text-base text-muted-foreground">
           {GRADE_LEVEL_LABELS[MOCK_STUDENT.currentGrade]} &middot;{" "}
           {CAREER_TRACK_LABELS[MOCK_STUDENT.targetCareer]}
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-5 sm:grid-cols-3">
         <Card>
           <CardHeader>
-            <CardDescription>Overall roadmap progress</CardDescription>
-            <CardTitle>{overallPct}%</CardTitle>
+            <CardDescription className="text-base">Overall roadmap progress</CardDescription>
+            <CardTitle className="text-3xl">{overallPct}%</CardTitle>
           </CardHeader>
           <CardContent>
             <Progress value={overallPct} />
@@ -37,14 +37,14 @@ export default function DashboardPage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardDescription>XP earned</CardDescription>
-            <CardTitle>{MOCK_STUDENT.xpPoints.toLocaleString()}</CardTitle>
+            <CardDescription className="text-base">XP earned</CardDescription>
+            <CardTitle className="text-3xl">{MOCK_STUDENT.xpPoints.toLocaleString()}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader>
-            <CardDescription>Milestones completed</CardDescription>
-            <CardTitle>
+            <CardDescription className="text-base">Milestones completed</CardDescription>
+            <CardTitle className="text-3xl">
               {completed} / {statuses.length}
             </CardTitle>
           </CardHeader>

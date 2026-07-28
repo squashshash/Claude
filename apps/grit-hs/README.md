@@ -76,6 +76,14 @@
   (admissions cutoffs, program rosters) — see `CLAUDE.md` for the full
   reasoning. 26 of 31 features are now live or mock; needs a free
   `TRANSITLAND_API_KEY` in addition to the existing env vars.
+- **Round 8** (done, structure-only): #24 Public Student Portfolio Handle —
+  an opt-in shareable page at `/p/[handle]`, off by default. New migration
+  (`0004_public_portfolio_handle.sql`, validated against a local throwaway
+  Postgres before trusting it) adds `handle`/`portfolio_public` to
+  `profiles`. The public read goes through the service-role client and
+  hand-picks only safe fields to return — never zip_code, state, or
+  user_id — rather than relying on a public RLS policy that could
+  over-expose columns. 27 of 31 features are now live or mock.
 
 ## ⚠️ No real backend is connected in this environment
 
@@ -112,12 +120,14 @@ requires credentials this sandbox doesn't have. Concretely:
   alongside the credential files and store the path).
 
 To actually run this against a real backend: create a Supabase project, run
-all three files in `supabase/migrations/` against it in order (the third
-creates the `credentials` Storage bucket + its RLS policies), copy
-`.env.local.example` to `.env.local` and fill in the values, and
-(optionally) add `ANTHROPIC_API_KEY` for live cold-outreach generation and
+all four files in `supabase/migrations/` against it in order (the third
+creates the `credentials` Storage bucket + its RLS policies, the fourth
+adds the public-portfolio columns), copy `.env.local.example` to
+`.env.local` and fill in the values, and (optionally) add
+`ANTHROPIC_API_KEY` for live cold-outreach generation,
 `COLLEGE_SCORECARD_API_KEY` (free from api.data.gov) for the College
-Matcher.
+Matcher, and `TRANSITLAND_API_KEY` (free from transit.land) for the
+Transit Planner.
 
 ## Stack
 
@@ -210,7 +220,8 @@ apps/grit-hs/
 Six tables, all with RLS enabled:
 
 - **profiles** — one row per user (`user_id` unique FK to `auth.users`);
-  career track, grade, location, XP.
+  career track, grade, location, XP. `0004` adds an opt-in `handle` +
+  `portfolio_public` for the public portfolio page.
 - **roadmaps** — one row per generated 4-year plan; the full generated plan
   is also kept as `roadmap_json` for fast reads, with `milestones` as the
   normalized, per-node source of truth.

@@ -169,7 +169,11 @@ behind it yet), **planned** = nav entry + "coming soon" card only.
    22. High-Yield Summer Program Directory — **mock**
 8. Digital Portfolio & Resume Tools
    23. Dynamic "Grit" Resume Builder — **live**
-   24. Public Student Portfolio Handle (`grit.hs/student`) — planned
+   24. Public Student Portfolio Handle — **live** (opt-in public page at
+       `/p/[handle]`; off by default, service-role API route hand-picks
+       only safe fields to expose publicly — never zip_code/state/user_id
+       — see `supabase/migrations/0004_public_portfolio_handle.sql` and
+       `app/api/portfolio/[handle]/route.ts`)
    25. Digital Credential Vault — **live** (tries `/api/credentials`,
        which really does upload to Supabase Storage + `user_credentials`;
        falls back to local-only preview when unauthenticated)
@@ -303,6 +307,32 @@ from its original ask specifically to stay inside what's actually verified:
   either dual-enrollment articulation or CTE credit MOUs.
 
 26 of 31 features are now live or mock (20 live, 6 mock); 5 remain planned
-(#3, #5, #7, #9, and #24 — the last one needs a real backend/auth, not
-external data). New env vars: `COLLEGE_SCORECARD_API_KEY`,
-`TRANSITLAND_API_KEY` (both free).
+(#3, #5, #7, #9, and #24 as of round 6 — #24 was built in round 8, see
+below). New env vars: `COLLEGE_SCORECARD_API_KEY`, `TRANSITLAND_API_KEY`
+(both free).
+
+## Round 8: #24 Public Student Portfolio Handle
+
+Structure-only, like the rest of Phase 3 — no live Supabase project to
+test against, but everything is real and type-checked, and the SQL
+migration was validated against a local throwaway Postgres before being
+trusted (same process used for the 0003 storage migration).
+
+- **`supabase/migrations/0004_public_portfolio_handle.sql`** — adds
+  `handle` (unique) and `portfolio_public` (default `false`, opt-in) to
+  `profiles`.
+- **`app/api/portfolio/route.ts`** — authenticated GET/PATCH for a student
+  to set their own handle and toggle public/private.
+- **`app/api/portfolio/[handle]/route.ts`** — the public-facing read,
+  using the service-role client (like `/api/hours/verify/[token]`) rather
+  than a public RLS policy on `profiles`. This matters for a minors'
+  product: the route hand-picks exactly which fields to return (name,
+  track, grade, XP, completed milestones, public credentials) and never
+  touches `zip_code`, `state`, or `user_id`, even though the service-role
+  client could technically see them.
+- **`app/p/[handle]/page.tsx`** — the public page itself, outside the
+  auth-protected route groups (same pattern as `/verify-hours/[token]`).
+- **`components/features/public-handle.tsx`** — the dashboard-side
+  management UI (set handle, toggle public, preview link).
+
+27 of 31 features are now live or mock; 4 remain planned (#3, #5, #7, #9).

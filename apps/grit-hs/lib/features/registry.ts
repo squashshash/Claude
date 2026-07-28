@@ -226,8 +226,8 @@ export const FEATURE_CATEGORIES: FeatureCategory[] = [
         slug: "public-handle",
         number: 24,
         title: "Public Student Portfolio Handle",
-        blurb: "A shareable grit.hs/you page for admissions officers and recruiters.",
-        status: "planned",
+        blurb: "An opt-in shareable page at /p/your-handle for admissions officers and recruiters.",
+        status: "live",
       },
       {
         slug: "credential-vault",

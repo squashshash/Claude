@@ -37,6 +37,8 @@ export interface Database {
           current_grade: GradeLevelEnum | null;
           target_graduation_year: number | null;
           xp_points: number;
+          handle: string | null;
+          portfolio_public: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -50,6 +52,8 @@ export interface Database {
           current_grade?: GradeLevelEnum | null;
           target_graduation_year?: number | null;
           xp_points?: number;
+          handle?: string | null;
+          portfolio_public?: boolean;
           created_at?: string;
           updated_at?: string;
         };

@@ -25,6 +25,7 @@ import { YouthLaborLaws } from "./youth-labor-laws";
 import { LiabilityHub } from "./liability-hub";
 import { TaxGuide } from "./tax-guide";
 import { TransitPlanner } from "./transit-planner";
+import { PublicHandle } from "./public-handle";
 
 export const FEATURE_COMPONENTS: Record<string, ComponentType> = {
   "gpa-calculator": GpaCalculator,
@@ -53,4 +54,5 @@ export const FEATURE_COMPONENTS: Record<string, ComponentType> = {
   "liability-hub": LiabilityHub,
   "tax-guide": TaxGuide,
   "transit-planner": TransitPlanner,
+  "public-handle": PublicHandle,
 };

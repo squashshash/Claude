@@ -1,0 +1,168 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Design direction: "trailhead" — topographic rivers/forests instead of the
+  generic SaaS palette. Coffee-brown base (a warm, dark umber background)
+  with an all-green interactive palette on top — no yellow/teal — drawn
+  from a 5-shade forest-green ramp (0A5C36 -> 1D2E28).
+
+  Surface treatment ("Liquid Glass"): cards/panels are frosted, saturated,
+  forest-green-tinted glass (backdrop-blur + backdrop-saturate + heavy
+  translucency + a bright top-edge highlight) floating over the brown
+  background, rather than flat opaque panels — see `--card`,
+  `--glass-border`, `--glass-highlight` and `components/ui/card.tsx`. The
+  glass tint is drawn from the same green family as `--primary`/`--accent`
+  (not slate/grey) so the material reads as "Grit green glass," not generic
+  frosted grey — deliberately keeping brown+green, not the generic
+  slate+red pairing a design-system lookup suggested.
+*/
+
+@layer base {
+  :root {
+    --background: 16 32% 17%;
+    --foreground: 30 28% 92%;
+
+    /* Forest-green glass surface, used translucent (bg-card/45) over the brown background */
+    --card: 150 30% 26%;
+    --card-foreground: 30 28% 92%;
+
+    /* Brighter, more saturated "Grit green" brand primary — dark text on top, not white, since it's too vivid for white to stay legible */
+    --primary: 145 58% 45%;
+    --primary-foreground: 150 45% 8%;
+
+    /* 1D2E28 — Gunmetal green */
+    --secondary: 159 27% 11%;
+    --secondary-foreground: 30 30% 95%;
+
+    /* Brightened Castleton green — more vivid than before, still dark enough for white text at 6.4:1 */
+    --accent: 150 68% 24%;
+    --accent-foreground: 30 30% 96%;
+
+    --muted: 16 20% 30%;
+    --muted-foreground: 30 16% 76%;
+
+    --destructive: 4 62% 48%;
+    --destructive-foreground: 30 30% 96%;
+
+    --locked: 16 16% 32%;
+    --locked-foreground: 30 12% 72%;
+
+    --border: 16 18% 32%;
+    --input: 16 18% 32%;
+    --ring: 145 58% 45%;
+
+    /* Bright forest-green glass edge + minty top highlight — visible, not a hairline */
+    --glass-border: 148 55% 68%;
+    --glass-highlight: 145 60% 94%;
+
+    --radius: 1.25rem;
+
+    --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+    --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  :root[data-theme="dark"] {
+    --background: 16 30% 9%;
+    --foreground: 30 22% 88%;
+
+    /* Forest-green glass surface, deepened for near-black background */
+    --card: 152 26% 15%;
+    --card-foreground: 30 22% 88%;
+
+    /* Brighter brand primary, tuned slightly lighter for the near-black dark background */
+    --primary: 145 50% 50%;
+    --primary-foreground: 150 45% 8%;
+
+    /* 1D2E28 — Gunmetal green, lightened just enough to read on near-black */
+    --secondary: 159 22% 24%;
+    --secondary-foreground: 30 25% 92%;
+
+    /* Brightened Castleton green — more vivid than before, still dark enough for white text at 4.8:1 */
+    --accent: 150 65% 30%;
+    --accent-foreground: 30 25% 95%;
+
+    --muted: 16 16% 17%;
+    --muted-foreground: 30 12% 65%;
+
+    --destructive: 4 54% 48%;
+    --destructive-foreground: 30 25% 95%;
+
+    --locked: 16 14% 19%;
+    --locked-foreground: 30 8% 55%;
+
+    --border: 16 14% 21%;
+    --input: 16 14% 21%;
+    --ring: 145 50% 50%;
+
+    --glass-border: 148 55% 62%;
+    --glass-highlight: 145 60% 90%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --background: 16 30% 9%;
+      --foreground: 30 22% 88%;
+      --card: 152 26% 15%;
+      --card-foreground: 30 22% 88%;
+      --primary: 145 50% 50%;
+      --primary-foreground: 150 45% 8%;
+      --secondary: 159 22% 24%;
+      --secondary-foreground: 30 25% 92%;
+      --accent: 150 65% 30%;
+      --accent-foreground: 30 25% 95%;
+      --muted: 16 16% 17%;
+      --muted-foreground: 30 12% 65%;
+      --destructive: 4 54% 48%;
+      --destructive-foreground: 30 25% 95%;
+      --locked: 16 14% 19%;
+      --locked-foreground: 30 8% 55%;
+      --border: 16 14% 21%;
+      --input: 16 14% 21%;
+      --ring: 145 50% 50%;
+      --glass-border: 148 55% 62%;
+      --glass-highlight: 145 60% 90%;
+    }
+  }
+
+  html {
+    /* larger, friendlier base scale — 18px instead of 16px */
+    font-size: 112.5%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  input[type="range"],
+  input[type="checkbox"] {
+    accent-color: hsl(var(--accent));
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+/* Slow ambient drift for the background glow blobs behind the glass panels */
+@keyframes float-slow {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(24px, -32px) scale(1.08); }
+}
+
+/* One-shot diagonal light catching the glass on hover — see components/ui/card.tsx */
+@keyframes glass-sweep {
+  0% { transform: translateX(-160%) skewX(-12deg); opacity: 0; }
+  15% { opacity: 0.6; }
+  100% { transform: translateX(160%) skewX(-12deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

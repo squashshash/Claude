@@ -1,0 +1,338 @@
+# GRIT Project Configuration & Execution Rules
+
+## Tech Stack & Architecture
+- Frontend: Next.js (App Router, TypeScript, Tailwind CSS, Shadcn-style UI, Framer Motion)
+- Backend & Auth: Supabase (PostgreSQL, Row Level Security, Storage, Edge Functions)
+- State & Forms: React Query (TanStack), Zustand, React Hook Form, Zod
+
+Note: scaffolded on Next.js 15.5.22 rather than 14.x — `npm audit` flagged the
+entire 14.2.x line for the same advisories that 15.5.22 already patches
+(`npm audit --omit=dev` is clean on this app). Same App Router conventions
+either way. Also on `@supabase/ssr@^0.12.3` rather than the originally
+scaffolded `^0.5.2` — that version's bundled types referenced internal
+`supabase-js` paths that no longer exist in current `supabase-js`, which
+silently resolved all typed table calls to `never` instead of erroring.
+
+## Auth & backend status (Phase 3)
+
+Login/signup/onboarding pages, `middleware.ts` route protection, and the
+`/api/roadmap/generate` + `/api/outreach/generate` routes are built and
+type-checked, but **no Supabase project or AI key is configured in this
+environment** — none of it has run against a real backend. Both API routes
+detect missing env vars and return a clear `501` instead of crashing; the
+middleware skips auth enforcement entirely until
+`NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY` are set. See the
+main README's "No real backend is connected" section for exact details and
+setup steps.
+
+5 of the 10 "live" dashboard features (Streak/Badges, Resume Builder,
+Weekly Tasks, Hours Logger, Credential Vault) now try a real API first
+(`/api/dashboard/state`, `/api/hours`, `/api/credentials`) and fall back to
+`lib/mock-data.ts` / local state when unauthenticated, with a "Your data" /
+"Sample data" badge always showing which is active. The other 5 (GPA
+calculator, AP/IB optimizer, certification rulebook, CTSO strategy engine,
+cold-outreach template) don't need per-user persistence and were left as
+pure client-side tools. Not built yet: the hours-verification-link
+endpoint, persisting the hours-logger's signature capture (no column for
+it), and a credential review/`is_verified` flow.
+
+## Design System & Aesthetic ("Grit")
+- Color palette: dark coffee-brown background with a monochrome forest-green
+  interactive family (primary/secondary/accent) layered on top — no yellow,
+  no teal, no generic blue SaaS blue. Defined as CSS custom properties in
+  `app/globals.css`, themed for both light and dark.
+- Surface material ("Liquid Glass" / "candy glass"): cards, the sidebar, and
+  the header are heavily transparent, forest-green-tinted glass (`bg-card`
+  down to ~15-22% opacity), blurred + saturated (`backdrop-blur-2xl
+  backdrop-saturate-200`), with a bright `--glass-border` edge, a permanent
+  glossy specular highlight blob (top-left radial gradient), and a one-shot
+  diagonal light-sweep on hover — floating over a slow-drifting ambient
+  green glow (`components/layout/ambient-glow.tsx`) behind the opaque brown
+  background, instead of flat opaque panels. Went through several rounds:
+  slate-tinted glass -> green-tinted glass -> brighter/more-saturated
+  primary+accent -> ambient glow + hover sweep + gradient wordmark -> much
+  more transparent + permanent glossy shine + gumdrop-style buttons ("candy
+  glass"). A generic design-system lookup suggested a slate+red "Liquid
+  Glass" pairing at the start; only the glass *material* was adopted, never
+  the palette — brown+green stays. See `components/ui/card.tsx`,
+  `components/ui/button.tsx`, and the `--card`/`--glass-*` tokens.
+- UI components: rounded cards and pill-shaped buttons/nav (`--radius`),
+  hover-lift on cards, hover/press scale on buttons, clean serif/sans type
+  hierarchy (`--font-display` / `--font-sans`), soft background fills.
+- Fun over corporate: prefer playful copy, satisfying micro-interactions,
+  and visible progress/streak feedback over flat static text — every new
+  feature should feel like part of a game you're winning, not a form you're
+  filling out.
+
+## Domain Logic & State Rules
+- Age-gated credentials: student state/ZIP determines eligibility. Enforce
+  age floors (e.g., CPR ~14, CNA 16 in most states/18 in some, EMT/Phlebotomy
+  practice restricted until 18 or senior year) with dynamic prerequisite
+  warnings — see `lib/roadmap/age-rules.ts` and
+  `supabase/migrations/0002_career_track_and_certifications_seed.sql`.
+- 4-year matrix structure: every pathway is organized into 5 timeline tiers —
+  Summer -0 (pre-9th), Grade 9, Grade 10, Grade 11, Grade 12 — see
+  `lib/constants.ts` (`GRADE_LEVELS`).
+- Tracks supported: Pre-Medicine/Clinical Healthcare, Nursing & Advanced
+  Practice, Software Engineering, Financial Engineering, Mechanical
+  Engineering/CAD, Law & Public Policy — see `lib/roadmap/templates/`.
+  CTECH/P-TECH and Business/DECA-specific tracks are on the feature list
+  below but don't have their own dedicated `CareerTrackTemplate` yet.
+
+## Code Style & Safety Guidelines
+- Always use strict TypeScript types generated from the Supabase DB schema.
+- Validate all incoming API and form payloads with Zod schemas.
+- Ensure Supabase Row Level Security (RLS) policies are active on every new
+  table created (pattern: `for select/insert/update/delete using (auth.uid()
+  = user_id)`, or via a parent-ownership `exists` subquery when the table
+  has no direct `user_id`, as `milestones` does through `roadmaps`).
+- Never write hardcoded inline secret keys; use environment variables
+  (`process.env`).
+
+## Feature Roadmap (30 features + 1 bonus, 9 categories)
+
+Status legend: **live** = real client-side logic against real seed data,
+**mock** = working UI with clearly-labeled sample data (no real backend/API
+behind it yet), **planned** = nav entry + "coming soon" card only.
+
+1. High-Yield Academics & Advanced Placement
+   1. Target GPA & Grade-Aiming Calculator — **live**
+   2. AP/IB Course Optimizer — **live**
+   3. Dual-Enrollment & Transferability Predictor — planned
+   4. Specialized High School 4-Year Planner — **live** (real career-track
+      electives per year, paired with a generic — explicitly not
+      state-specific — core graduation requirements model)
+2. Specialized Technical & Early College Hubs (CTECH / P-TECH)
+   5. CTECH Program Integration — planned (no national directory exists —
+      CTECH programs are too district-specific; would need per-district
+      manual collection like #7)
+   6. P-TECH Associate Degree Tracker — **live** (a real explainer of what
+      P-TECH is + a link to the official ptech.org directory + a local
+      tracker for the student's own program — deliberately not a fabricated
+      national school roster)
+   7. CTE Articulation Credit Vault — planned (articulation agreements are
+      decentralized per-district legal MOUs in unstructured PDFs — no
+      aggregated source exists to build against honestly)
+3. College Targeting & Major Alignment
+   8. Career-to-College Target Matcher — **live** (real data from the U.S.
+      Dept of Education's College Scorecard API — admit rate, tuition,
+      10-yr median earnings for 6,000+ institutions; search by name/state,
+      not a curated "best for your track" ranking, since that would need
+      CIP-code field-of-study filtering not yet verified — see
+      `app/api/college-matcher/route.ts`, needs `COLLEGE_SCORECARD_API_KEY`)
+   9. Direct-Admit & BS/MD Pathway Planner — planned (AAMC's official
+      directory is real, but its ~50-70 programs' exact GPA/test-score
+      cutoffs and admissions status weren't verified this round — building
+      it with unverified specifics risks a wrong number for a real medical
+      admissions decision, worse than staying "coming soon")
+   10. University Essay Prompt Deconstructor — **live** (splits any pasted
+       prompt into its sub-questions + word-count target, pairs each with
+       one of your own completed milestones — no AI call, no fabricated
+       college-specific prompts)
+4. State Rules, Legal & Compliance Engine
+   11. State-by-State Certification Rulebook — **live**
+   12. Youth Minor Working Laws & Permit Guide — **live** (real federal
+       FLSA baseline from DOL Fact Sheet #43, verified — deliberately
+       does NOT include a 50-state table since that wasn't verified
+       per-state; links to DOL's official state comparison instead)
+   13. Shadowing & Clinical Liability Hub — **live** (real HIPAA/OSHA
+       regulatory guidance — 45 CFR §164.501/§160.103, 29 CFR 1910.1030 —
+       informational only, explicitly not a waiver generator)
+5. Jobs, Paid Work & Financial Independence
+   14. Entry-Level Youth Job & Internship Board — **mock**
+   15. Stipend & Micro-Grant Finder — **mock**
+   16. W-4 & Youth Tax Essentials Guide — **live** (a rule-based Form W-4
+       exemption wizard — deliberately doesn't hardcode this year's exact
+       standard-deduction dollar figure since that goes stale annually;
+       links to IRS.gov for the current number)
+6. Transportation & License Milestones
+   17. Driver's License & Mobility Progress Tracker — **live** (permit
+       hours counter, driver's-ed toggle, road-test countdown)
+   18. Transit & Commute Route Planner — **live**, but rescoped — real
+       nearby transit stops + routes via Transitland's stable REST API,
+       NOT full point-to-point trip routing. Verified this round that a
+       prior research report's "BUILD NOW" verdict was wrong:
+       OpenRouteService has no public-transit routing mode at all (only
+       car/bike/walk/wheelchair), and Transitland's actual routing engine
+       is explicitly labeled beta by their own docs. Needs
+       `TRANSITLAND_API_KEY`.
+7. Real-World Experience & Extracurriculars
+   19. CTSO Competition Strategy Engine — **live**
+   20. AI-Powered Cold Outreach Generator — **mock** (template-based
+       mail-merge for now; wiring an actual LLM call is a Phase 3 item once
+       an AI SDK key is configured)
+   21. Clinical & Volunteer Hours Verification Logger — **live** (tries
+       `/api/hours` first, falls back to local state; has a real printable
+       PDF summary and a real public supervisor-confirmation link at
+       `/verify-hours/[token]`; the signature capture itself is still
+       session-only — no column for it yet)
+   22. High-Yield Summer Program Directory — **mock**
+8. Digital Portfolio & Resume Tools
+   23. Dynamic "Grit" Resume Builder — **live**
+   24. Public Student Portfolio Handle — **live** (opt-in public page at
+       `/p/[handle]`; off by default, service-role API route hand-picks
+       only safe fields to expose publicly — never zip_code/state/user_id
+       — see `supabase/migrations/0004_public_portfolio_handle.sql` and
+       `app/api/portfolio/[handle]/route.ts`)
+   25. Digital Credential Vault — **live** (tries `/api/credentials`,
+       which really does upload to Supabase Storage + `user_credentials`;
+       falls back to local-only preview when unauthenticated)
+9. Execution, Mentorship & Accountability
+   26. Weekly Task Deconstructor — **live**
+   27. "Streak & Grit" Gamified Score System — **live**
+   28. Near-Peer Mentor Matcher — **mock**
+   29. Counselor & Advisor Export Hub — **live** (real printable one-pager:
+       roadmap progress, milestones by category, hours totals, credential
+       count — pulls the same real/sample data each source feature already
+       uses)
+   30. Parent Read-Only Dashboard — **live** (same real/sample stats +
+       full read-only Milestone Matrix; no forms, no upload controls, no
+       edit paths at all)
+   31. Track Leaderboard (bonus, not in the original 30) — **mock**,
+       anonymized sample peers ranked by XP alongside the real student XP
+
+## Round 4: visualization + gamification additions
+
+From a later brainstorm of ~16 ideas (high-tech visuals, social/competition,
+gamification, logistics), 4 were built, honestly scoped as real widgets
+against existing data rather than new backend surface area:
+
+- **Skill Coverage Radar Chart** (`components/roadmap/skill-radar-chart.tsx`)
+  — hand-rolled SVG radar on `/roadmap`, one axis per milestone category,
+  percent-complete computed from the same template + derive-status logic
+  the Milestone Matrix already uses.
+- **Hours Activity Heatmap** (`components/features/hours-heatmap.tsx`) — a
+  12-week GitHub-style calendar heatmap inside the Hours Logger, colored by
+  hours logged per day from the same `entries` state (real or sample,
+  matching whichever the logger is already showing).
+- **Focus Mode** (`components/dashboard/focus-mode.tsx`) — a dashboard
+  toggle that collapses the 3 stat cards down to just the next 2 incomplete
+  milestones, for a distraction-free "what do I do right now" view.
+- **Track Leaderboard** (#31 above).
+
+Explicitly **not built** from that same brainstorm, and why: AI-generated
+mentor avatars (needs an image-gen API, none configured), verified
+cohort/social matching and an alumni showcase feed (both need real user
+accounts and moderation, not just UI), CTSO AI-judge mock practice (needs a
+real LLM judging rubric, high fabrication risk without one), an
+informational-interview booking marketplace (two-sided marketplace, out of
+scope for a solo-student app), a minor work-permit form generator (risk of
+confidently fabricating state-specific legal forms), a literal 3D/WebGL
+skill tree, and a QR code for the hours-verification link (needs a new
+dependency; deferred, not declined). Car license + job board ideas from
+that list were already covered by existing features #17 and #14 and were
+not rebuilt.
+
+## Round 5: 3 more features converted from "coming soon" to real
+
+#10 Essay Prompt Deconstructor, #29 Counselor & Advisor Export Hub, and #30
+Parent Read-Only Dashboard are now live, all built without any new
+fabricated content — each is either a generic client-side tool (essay
+splitter) or an aggregation view over data other features already fetch
+(export hub, parent dashboard reuse `useDashboardData`, `/api/hours`,
+`/api/credentials`, and the existing `MilestoneMatrix` component). 11
+features remain planned: #3, #5, #6, #7, #8, #9, #12, #13, #16, #18, #24 —
+mostly held back because building them honestly would require real
+institution-specific or state-specific data (college admissions stats,
+CTECH/P-TECH program details, articulation agreements, state labor law)
+that isn't sourced in this environment; fabricating specifics there would
+be worse than leaving them as "coming soon."
+
+## Round 6: real external data sourcing for the remaining features
+
+A deep-research pass (external, not this session's own tools) evaluated a
+real authoritative data source for each of the 9 still-planned features that
+need external data. Verdicts, condensed:
+
+- **BUILD NOW** (clean free API, no manual curation): #8 Career-to-College
+  Target Matcher (College Scorecard API) and #18 Transit & Commute Route
+  Planner (GTFS via Transitland/OpenRouteService).
+- **BUILD WITH MAINTENANCE** (real source, but static/manual, needs periodic
+  re-ingestion): #5/#6 CTECH & P-TECH Tracker (ptech.org + state CTE
+  registries), #9 Direct-Admit & BS/MD Planner (AAMC's official directory),
+  #12 Youth Labor Laws (DOL WHD state comparison tables), #13 Clinical
+  Liability Hub (HHS OCR HIPAA guidance + OSHA 29 CFR 1910.1030 — info only,
+  explicitly not a legal waiver generator), #16 W-4/Tax Guide (IRS Form
+  W-4 + Pub 505).
+- **DO NOT BUILD YET** (no aggregated source exists at all): #3
+  Dual-Enrollment Predictor and #7 CTE Articulation Vault — both are
+  decentralized, per-district/per-state legal agreements (ASSIST.org has no
+  public API as of the research date; CTE articulation MOUs live in
+  unstructured per-district PDFs). Would need real per-region manual data
+  collection to build honestly, not scraping/fabrication.
+
+**#8 Career-to-College Target Matcher was built this round** —
+`app/api/college-matcher/route.ts` proxies the real College Scorecard API
+server-side (same env-var-gated-501 pattern as every other API route;
+needs a free `COLLEGE_SCORECARD_API_KEY` from api.data.gov). Deliberately
+scoped as a plain search (by school name/state) rather than a "matched to
+your career track" ranking, since that would require CIP-code
+field-of-study query parameters this session didn't verify precisely
+enough to trust — mis-mapping a CIP code would silently return wrong
+schools for a track, which is worse than not filtering at all.
+
+The other 8 features in this list remain planned. Building the
+"BUILD WITH MAINTENANCE" tier means hand-transcribing real government/
+official-source tables into seed data (same pattern as the certifications
+catalog) — real work, not a quick follow-up — so each should be its own
+explicit ask rather than assumed.
+
+## Round 7: 5 more features, all against verified real sources
+
+#6 P-TECH Tracker, #12 Youth Labor Laws, #13 Clinical Liability Hub, #16
+W-4/Tax Guide, and #18 Transit Planner are now live. Each was scoped down
+from its original ask specifically to stay inside what's actually verified:
+
+- **#12 and #16 deliberately omit exact numbers that go stale** (50-state
+  hour tables, this year's standard deduction) rather than hardcode
+  something that will silently become wrong — both link to the live
+  government source instead.
+- **#18 was rescoped mid-build**: the research this round said "BUILD NOW"
+  for a full transit route planner, but verification found that's wrong —
+  OpenRouteService has no transit routing mode, and Transitland's actual
+  routing engine is beta per their own docs. Built nearby-stops +
+  served-routes instead (Transitland's stable REST API), not point-to-point
+  directions.
+- **#6 explicitly does not fabricate a P-TECH school roster** — no national
+  API exists for that, so it explains the real program model, links to the
+  official directory, and lets the student track their own program's real
+  details.
+- **#9 (BS/MD planner) and #5 (CTECH) were NOT built** this round despite
+  having research entries — AAMC's directory is real but this session
+  didn't verify the ~50-70 programs' individual GPA/test-score cutoffs, and
+  CTECH has no aggregated source at all. Both stay "coming soon" rather
+  than risk a wrong number on a real admissions decision.
+- **#3 and #7 also remain untouched** — the research's own verdict for
+  both was "do not build," confirmed: no aggregated source exists for
+  either dual-enrollment articulation or CTE credit MOUs.
+
+26 of 31 features are now live or mock (20 live, 6 mock); 5 remain planned
+(#3, #5, #7, #9, and #24 as of round 6 — #24 was built in round 8, see
+below). New env vars: `COLLEGE_SCORECARD_API_KEY`, `TRANSITLAND_API_KEY`
+(both free).
+
+## Round 8: #24 Public Student Portfolio Handle
+
+Structure-only, like the rest of Phase 3 — no live Supabase project to
+test against, but everything is real and type-checked, and the SQL
+migration was validated against a local throwaway Postgres before being
+trusted (same process used for the 0003 storage migration).
+
+- **`supabase/migrations/0004_public_portfolio_handle.sql`** — adds
+  `handle` (unique) and `portfolio_public` (default `false`, opt-in) to
+  `profiles`.
+- **`app/api/portfolio/route.ts`** — authenticated GET/PATCH for a student
+  to set their own handle and toggle public/private.
+- **`app/api/portfolio/[handle]/route.ts`** — the public-facing read,
+  using the service-role client (like `/api/hours/verify/[token]`) rather
+  than a public RLS policy on `profiles`. This matters for a minors'
+  product: the route hand-picks exactly which fields to return (name,
+  track, grade, XP, completed milestones, public credentials) and never
+  touches `zip_code`, `state`, or `user_id`, even though the service-role
+  client could technically see them.
+- **`app/p/[handle]/page.tsx`** — the public page itself, outside the
+  auth-protected route groups (same pattern as `/verify-hours/[token]`).
+- **`components/features/public-handle.tsx`** — the dashboard-side
+  management UI (set handle, toggle public, preview link).
+
+27 of 31 features are now live or mock; 4 remain planned (#3, #5, #7, #9).

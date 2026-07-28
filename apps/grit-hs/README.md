@@ -84,6 +84,15 @@
   hand-picks only safe fields to return — never zip_code, state, or
   user_id — rather than relying on a public RLS policy that could
   over-expose columns. 27 of 31 features are now live or mock.
+- **Round 9** (done): a full regression sweep across all 27 live/mock
+  features plus every core page (dashboard, roadmap, login, signup,
+  onboarding, settings) — 33/33 loaded clean with zero unexpected console
+  errors, no visual regressions found, and a handful of interactive
+  spot-checks (streak increment, GPA "add class", tax wizard, transit
+  search) all behaved correctly. No bugs found, nothing to fix. Added
+  [`DEPLOYMENT.md`](./DEPLOYMENT.md) — a full Supabase + Vercel deploy
+  walkthrough, including the monorepo root-directory setting and the
+  Supabase Auth redirect-URL step that's easy to miss.
 
 ## ⚠️ No real backend is connected in this environment
 
@@ -157,6 +166,12 @@ npm run dev   # app redirects / -> /dashboard
 Without `.env.local` filled in: the app is fully browsable (no auth
 enforced), and the two new API routes return a clear "not configured"
 message instead of crashing.
+
+## Deploying
+
+See [`DEPLOYMENT.md`](./DEPLOYMENT.md) for the full Supabase + Vercel
+walkthrough (~15-20 min) — including the monorepo root-directory gotcha and
+the Supabase Auth redirect-URL step people usually miss.
 
 ## Proposed project structure
 

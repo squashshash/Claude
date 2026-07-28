@@ -20,6 +20,11 @@ import { CounselorExport } from "./counselor-export";
 import { ParentDashboard } from "./parent-dashboard";
 import { EssayDeconstructor } from "./essay-deconstructor";
 import { CollegeMatcher } from "./college-matcher";
+import { PTechTracker } from "./p-tech-tracker";
+import { YouthLaborLaws } from "./youth-labor-laws";
+import { LiabilityHub } from "./liability-hub";
+import { TaxGuide } from "./tax-guide";
+import { TransitPlanner } from "./transit-planner";
 
 export const FEATURE_COMPONENTS: Record<string, ComponentType> = {
   "gpa-calculator": GpaCalculator,
@@ -43,4 +48,9 @@ export const FEATURE_COMPONENTS: Record<string, ComponentType> = {
   "parent-dashboard": ParentDashboard,
   "essay-deconstructor": EssayDeconstructor,
   "college-matcher": CollegeMatcher,
+  "p-tech-tracker": PTechTracker,
+  "youth-labor-laws": YouthLaborLaws,
+  "liability-hub": LiabilityHub,
+  "tax-guide": TaxGuide,
+  "transit-planner": TransitPlanner,
 };

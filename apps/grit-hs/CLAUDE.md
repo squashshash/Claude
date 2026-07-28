@@ -103,9 +103,16 @@ behind it yet), **planned** = nav entry + "coming soon" card only.
       electives per year, paired with a generic — explicitly not
       state-specific — core graduation requirements model)
 2. Specialized Technical & Early College Hubs (CTECH / P-TECH)
-   5. CTECH Program Integration — planned
-   6. P-TECH Associate Degree Tracker — planned
-   7. CTE Articulation Credit Vault — planned
+   5. CTECH Program Integration — planned (no national directory exists —
+      CTECH programs are too district-specific; would need per-district
+      manual collection like #7)
+   6. P-TECH Associate Degree Tracker — **live** (a real explainer of what
+      P-TECH is + a link to the official ptech.org directory + a local
+      tracker for the student's own program — deliberately not a fabricated
+      national school roster)
+   7. CTE Articulation Credit Vault — planned (articulation agreements are
+      decentralized per-district legal MOUs in unstructured PDFs — no
+      aggregated source exists to build against honestly)
 3. College Targeting & Major Alignment
    8. Career-to-College Target Matcher — **live** (real data from the U.S.
       Dept of Education's College Scorecard API — admit rate, tuition,
@@ -113,23 +120,42 @@ behind it yet), **planned** = nav entry + "coming soon" card only.
       not a curated "best for your track" ranking, since that would need
       CIP-code field-of-study filtering not yet verified — see
       `app/api/college-matcher/route.ts`, needs `COLLEGE_SCORECARD_API_KEY`)
-   9. Direct-Admit & BS/MD Pathway Planner — planned
+   9. Direct-Admit & BS/MD Pathway Planner — planned (AAMC's official
+      directory is real, but its ~50-70 programs' exact GPA/test-score
+      cutoffs and admissions status weren't verified this round — building
+      it with unverified specifics risks a wrong number for a real medical
+      admissions decision, worse than staying "coming soon")
    10. University Essay Prompt Deconstructor — **live** (splits any pasted
        prompt into its sub-questions + word-count target, pairs each with
        one of your own completed milestones — no AI call, no fabricated
        college-specific prompts)
 4. State Rules, Legal & Compliance Engine
    11. State-by-State Certification Rulebook — **live**
-   12. Youth Minor Working Laws & Permit Guide — planned
-   13. Shadowing & Clinical Liability Hub — planned
+   12. Youth Minor Working Laws & Permit Guide — **live** (real federal
+       FLSA baseline from DOL Fact Sheet #43, verified — deliberately
+       does NOT include a 50-state table since that wasn't verified
+       per-state; links to DOL's official state comparison instead)
+   13. Shadowing & Clinical Liability Hub — **live** (real HIPAA/OSHA
+       regulatory guidance — 45 CFR §164.501/§160.103, 29 CFR 1910.1030 —
+       informational only, explicitly not a waiver generator)
 5. Jobs, Paid Work & Financial Independence
    14. Entry-Level Youth Job & Internship Board — **mock**
    15. Stipend & Micro-Grant Finder — **mock**
-   16. W-4 & Youth Tax Essentials Guide — planned
+   16. W-4 & Youth Tax Essentials Guide — **live** (a rule-based Form W-4
+       exemption wizard — deliberately doesn't hardcode this year's exact
+       standard-deduction dollar figure since that goes stale annually;
+       links to IRS.gov for the current number)
 6. Transportation & License Milestones
    17. Driver's License & Mobility Progress Tracker — **live** (permit
        hours counter, driver's-ed toggle, road-test countdown)
-   18. Transit & Commute Route Planner — planned
+   18. Transit & Commute Route Planner — **live**, but rescoped — real
+       nearby transit stops + routes via Transitland's stable REST API,
+       NOT full point-to-point trip routing. Verified this round that a
+       prior research report's "BUILD NOW" verdict was wrong:
+       OpenRouteService has no public-transit routing mode at all (only
+       car/bike/walk/wheelchair), and Transitland's actual routing engine
+       is explicitly labeled beta by their own docs. Needs
+       `TRANSITLAND_API_KEY`.
 7. Real-World Experience & Extracurriculars
    19. CTSO Competition Strategy Engine — **live**
    20. AI-Powered Cold Outreach Generator — **mock** (template-based
@@ -246,3 +272,37 @@ The other 8 features in this list remain planned. Building the
 official-source tables into seed data (same pattern as the certifications
 catalog) — real work, not a quick follow-up — so each should be its own
 explicit ask rather than assumed.
+
+## Round 7: 5 more features, all against verified real sources
+
+#6 P-TECH Tracker, #12 Youth Labor Laws, #13 Clinical Liability Hub, #16
+W-4/Tax Guide, and #18 Transit Planner are now live. Each was scoped down
+from its original ask specifically to stay inside what's actually verified:
+
+- **#12 and #16 deliberately omit exact numbers that go stale** (50-state
+  hour tables, this year's standard deduction) rather than hardcode
+  something that will silently become wrong — both link to the live
+  government source instead.
+- **#18 was rescoped mid-build**: the research this round said "BUILD NOW"
+  for a full transit route planner, but verification found that's wrong —
+  OpenRouteService has no transit routing mode, and Transitland's actual
+  routing engine is beta per their own docs. Built nearby-stops +
+  served-routes instead (Transitland's stable REST API), not point-to-point
+  directions.
+- **#6 explicitly does not fabricate a P-TECH school roster** — no national
+  API exists for that, so it explains the real program model, links to the
+  official directory, and lets the student track their own program's real
+  details.
+- **#9 (BS/MD planner) and #5 (CTECH) were NOT built** this round despite
+  having research entries — AAMC's directory is real but this session
+  didn't verify the ~50-70 programs' individual GPA/test-score cutoffs, and
+  CTECH has no aggregated source at all. Both stay "coming soon" rather
+  than risk a wrong number on a real admissions decision.
+- **#3 and #7 also remain untouched** — the research's own verdict for
+  both was "do not build," confirmed: no aggregated source exists for
+  either dual-enrollment articulation or CTE credit MOUs.
+
+26 of 31 features are now live or mock (20 live, 6 mock); 5 remain planned
+(#3, #5, #7, #9, and #24 — the last one needs a real backend/auth, not
+external data). New env vars: `COLLEGE_SCORECARD_API_KEY`,
+`TRANSITLAND_API_KEY` (both free).

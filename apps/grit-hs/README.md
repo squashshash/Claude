@@ -63,6 +63,19 @@
   candy-glass button styling's `overflow-hidden` could clip button label
   text when a button was squeezed by flex siblings — fixed globally with
   `shrink-0` on the button base styles.
+- **Round 7** (done): 5 more features built against verified real sources —
+  #6 P-TECH Tracker, #12 Youth Labor Laws, #13 Clinical Liability Hub, #16
+  W-4/Tax Guide, #18 Transit Planner. Two of these deliberately omit
+  numbers that go stale (50-state hour limits, this year's standard
+  deduction), linking to the live government source instead of hardcoding
+  something that'll silently go wrong later. #18 was rescoped mid-build
+  after verifying the prior research's "BUILD NOW" verdict was actually
+  wrong — no free API does full transit trip routing, so it shows nearby
+  stops instead. #9 (BS/MD planner) and #5 (CTECH) stayed "coming soon"
+  since building them would've meant asserting unverified specifics
+  (admissions cutoffs, program rosters) — see `CLAUDE.md` for the full
+  reasoning. 26 of 31 features are now live or mock; needs a free
+  `TRANSITLAND_API_KEY` in addition to the existing env vars.
 
 ## ⚠️ No real backend is connected in this environment
 

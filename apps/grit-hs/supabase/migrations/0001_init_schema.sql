@@ -24,6 +24,7 @@ create type hours_status as enum ('pending', 'verified', 'rejected');
 create or replace function set_updated_at()
 returns trigger
 language plpgsql
+set search_path = ''
 as $$
 begin
   new.updated_at = now();

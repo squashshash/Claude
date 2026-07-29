@@ -165,3 +165,21 @@ export function isTooYoung(certRef: string, studentAge: number, state?: string):
   if (!rule) return false;
   return studentAge < rule.minAge;
 }
+
+/**
+ * Real profiles store `current_grade` (a tier), not a birthdate, so there's
+ * no exact age to feed the age-gate checks above. This maps each grade tier
+ * to its typical age — the same mapping implicit in `lib/mock-data.ts`
+ * (grade_10 -> 15) — as a reasonable estimate, not a fabricated fact.
+ */
+const TYPICAL_AGE_BY_GRADE: Record<import("@/lib/constants").GradeLevel, number> = {
+  summer_0: 13,
+  grade_9: 14,
+  grade_10: 15,
+  grade_11: 16,
+  grade_12: 17,
+};
+
+export function estimateAgeFromGrade(grade: import("@/lib/constants").GradeLevel): number {
+  return TYPICAL_AGE_BY_GRADE[grade];
+}

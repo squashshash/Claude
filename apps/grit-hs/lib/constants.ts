@@ -60,3 +60,6 @@ export const MILESTONE_STATUSES = [
 ] as const;
 
 export type MilestoneStatus = (typeof MILESTONE_STATUSES)[number];
+
+/** XP awarded when a milestone is marked completed, and revoked if un-marked. */
+export const MILESTONE_XP_AWARD = 100;

@@ -1,6 +1,10 @@
-import { GraduationCap, ShieldCheck, Trophy, Briefcase, type LucideIcon } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import { GraduationCap, ShieldCheck, Trophy, Briefcase, Check, Undo2, Loader2, type LucideIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { AgeGateBadge } from "@/components/certifications/age-gate-badge";
 import { cn } from "@/lib/utils";
 import type { MilestoneCategory, MilestoneStatus } from "@/lib/constants";
@@ -28,17 +32,33 @@ const STATUS_BADGE_VARIANT: Record<MilestoneStatus, "default" | "accent" | "outl
 };
 
 export function MilestoneCard({
+  id,
   milestone,
   status,
   studentAge,
   studentState,
+  onToggleComplete,
 }: {
+  id?: string;
   milestone: MilestoneTemplate;
   status: MilestoneStatus;
   studentAge: number;
   studentState?: string;
+  onToggleComplete?: (id: string, nextStatus: MilestoneStatus) => Promise<void> | void;
 }) {
   const Icon = CATEGORY_ICON[milestone.category];
+  const [pending, setPending] = useState(false);
+  const canToggle = Boolean(id && onToggleComplete) && status !== "locked";
+
+  const handleToggle = async () => {
+    if (!id || !onToggleComplete || pending) return;
+    setPending(true);
+    try {
+      await onToggleComplete(id, status === "completed" ? "not_started" : "completed");
+    } finally {
+      setPending(false);
+    }
+  };
 
   return (
     <Card
@@ -60,6 +80,25 @@ export function MilestoneCard({
           <div className="pt-1">
             <AgeGateBadge certRef={milestone.certRef} studentAge={studentAge} studentState={studentState} />
           </div>
+        )}
+        {canToggle && (
+          <Button
+            type="button"
+            size="sm"
+            variant={status === "completed" ? "outline" : "default"}
+            className="mt-1 gap-1.5 self-start"
+            disabled={pending}
+            onClick={handleToggle}
+          >
+            {pending ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+            ) : status === "completed" ? (
+              <Undo2 className="h-3.5 w-3.5" aria-hidden="true" />
+            ) : (
+              <Check className="h-3.5 w-3.5" aria-hidden="true" />
+            )}
+            {status === "completed" ? "Mark incomplete" : "Mark complete"}
+          </Button>
         )}
       </CardContent>
     </Card>

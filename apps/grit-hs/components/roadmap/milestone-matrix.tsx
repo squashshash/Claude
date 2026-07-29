@@ -1,17 +1,19 @@
-import { GRADE_LEVELS, type GradeLevel } from "@/lib/constants";
+import { GRADE_LEVELS, type GradeLevel, type MilestoneStatus } from "@/lib/constants";
 import { YearColumn } from "@/components/roadmap/year-column";
-import type { CareerTrackTemplate } from "@/types/roadmap";
+import type { ResolvedMilestone } from "@/types/roadmap";
 
 export function MilestoneMatrix({
-  template,
+  milestones,
   currentGrade,
   studentAge,
   studentState,
+  onToggleComplete,
 }: {
-  template: CareerTrackTemplate;
+  milestones: ResolvedMilestone[];
   currentGrade: GradeLevel;
   studentAge: number;
   studentState?: string;
+  onToggleComplete?: (id: string, nextStatus: MilestoneStatus) => Promise<void> | void;
 }) {
   return (
     <div className="flex gap-6 overflow-x-auto pb-4">
@@ -19,10 +21,11 @@ export function MilestoneMatrix({
         <YearColumn
           key={gradeLevel}
           gradeLevel={gradeLevel}
-          milestones={template.milestones.filter((m) => m.gradeLevel === gradeLevel)}
+          milestones={milestones.filter((m) => m.milestone.gradeLevel === gradeLevel)}
           currentGrade={currentGrade}
           studentAge={studentAge}
           studentState={studentState}
+          onToggleComplete={onToggleComplete}
         />
       ))}
     </div>

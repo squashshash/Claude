@@ -9,8 +9,11 @@ import { MilestoneMatrix } from "@/components/roadmap/milestone-matrix";
 import { MOCK_STUDENT } from "@/lib/mock-data";
 import { getRoadmapTemplate } from "@/lib/roadmap/templates";
 import { deriveMilestoneStatus } from "@/lib/roadmap/derive-status";
+import { milestoneFromDb } from "@/lib/roadmap/from-db";
+import { estimateAgeFromGrade } from "@/lib/roadmap/age-rules";
 import { useDashboardData } from "@/lib/hooks/use-dashboard-data";
 import { CAREER_TRACK_LABELS, GRADE_LEVEL_LABELS } from "@/lib/constants";
+import type { ResolvedMilestone } from "@/types/roadmap";
 
 type HoursCategory = "clinical" | "volunteer" | "shadowing";
 interface DbHoursRow {
@@ -45,13 +48,21 @@ export function ParentDashboard() {
     ? data!.profile!.target_career ?? MOCK_STUDENT.targetCareer
     : MOCK_STUDENT.targetCareer;
   const xp = isReal ? data!.profile!.xp_points : MOCK_STUDENT.xpPoints;
+  const studentAge = isReal ? estimateAgeFromGrade(currentGrade) : MOCK_STUDENT.age;
+  const studentState = isReal ? data!.profile!.state ?? undefined : MOCK_STUDENT.state;
 
-  const template = getRoadmapTemplate(targetCareer);
-  const statuses = template.milestones.map((m) =>
-    deriveMilestoneStatus(m, currentGrade, MOCK_STUDENT.age, MOCK_STUDENT.state)
-  );
-  const completedCount = statuses.filter((s) => s === "completed").length;
-  const overallPct = Math.round((completedCount / statuses.length) * 100);
+  const resolvedMilestones: ResolvedMilestone[] =
+    isReal && data!.milestones?.length
+      ? data!.milestones!.map((row) => ({ id: row.id, milestone: milestoneFromDb(row), status: row.status }))
+      : getRoadmapTemplate(targetCareer).milestones.map((m) => ({
+          milestone: m,
+          status: deriveMilestoneStatus(m, currentGrade, MOCK_STUDENT.age, MOCK_STUDENT.state),
+        }));
+
+  const completedCount = resolvedMilestones.filter((m) => m.status === "completed").length;
+  const overallPct = resolvedMilestones.length
+    ? Math.round((completedCount / resolvedMilestones.length) * 100)
+    : 0;
   const totalHours = hoursTotals.clinical + hoursTotals.volunteer + hoursTotals.shadowing;
 
   return (
@@ -94,7 +105,7 @@ export function ParentDashboard() {
           <CardHeader>
             <CardDescription>Milestones</CardDescription>
             <CardTitle className="text-2xl">
-              {completedCount} / {statuses.length}
+              {completedCount} / {resolvedMilestones.length}
             </CardTitle>
           </CardHeader>
         </Card>
@@ -114,10 +125,10 @@ export function ParentDashboard() {
       </Card>
 
       <MilestoneMatrix
-        template={template}
+        milestones={resolvedMilestones}
         currentGrade={currentGrade}
-        studentAge={MOCK_STUDENT.age}
-        studentState={MOCK_STUDENT.state}
+        studentAge={studentAge}
+        studentState={studentState}
       />
     </div>
   );

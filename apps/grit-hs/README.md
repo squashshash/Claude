@@ -189,6 +189,18 @@ Transit Planner.
   aggregated source for either. Deleted from `lib/features/registry.ts`;
   no longer appear in the sidebar or feature grid. #6 P-TECH Tracker keeps
   its number; #5/#7 are retired, not renumbered. See `CLAUDE.md`'s Round 12.
+- **Round 15** (done): audited every button in the app for dead handlers
+  (none found — all real). Fixed a real bug where the Mentor Matcher always
+  matched against the mock student's track instead of the real logged-in
+  student's; the CTSO Strategy Engine, Certification Rulebook, Job Board,
+  and Summer Program Directory now all actually filter/sort/highlight by
+  the student's real career track. Added an in-app Reminders widget on the
+  Dashboard — real computed nudges (incomplete milestones, stale hours
+  log, empty credential vault, no public portfolio) plus one evergreen,
+  track-specific tip per track describing how each track's key exam
+  actually works (on-demand vs. fixed annual window) rather than a
+  specific date that would go stale. In-app only — no email/push
+  infrastructure was added. See `CLAUDE.md`'s Round 13.
 
 ## Stack
 

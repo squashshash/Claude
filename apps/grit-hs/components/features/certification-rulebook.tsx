@@ -4,7 +4,23 @@ import { useMemo, useState } from "react";
 import { Search, ShieldCheck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { CERTIFICATION_AGE_RULES, getAgeRule } from "@/lib/roadmap/age-rules";
+import { useDashboardData } from "@/lib/hooks/use-dashboard-data";
+import { MOCK_STUDENT } from "@/lib/mock-data";
+import { CAREER_TRACK_LABELS, type CareerTrack } from "@/lib/constants";
+
+// Which cert catalog category is most relevant to each career track. Law &
+// Public Policy has no direct match in this catalog (no legal-credential
+// entries exist yet), so it's intentionally left unmapped rather than
+// forced onto an unrelated category.
+const TRACK_TO_CERT_CATEGORY: Partial<Record<CareerTrack, string>> = {
+  pre_med_clinical_healthcare: "healthcare",
+  nursing_advanced_practice: "healthcare",
+  software_engineering: "technology",
+  financial_engineering: "finance",
+  mechanical_engineering_cad: "engineering",
+};
 
 const STATES = [
   { code: "", label: "Any state (default rules)" },
@@ -21,19 +37,27 @@ const CATEGORY_LABEL: Record<string, string> = {
 };
 
 export function CertificationRulebook() {
+  const { data } = useDashboardData();
+  const isReal = Boolean(data?.authenticated && data.profile);
+  const targetCareer = isReal ? data!.profile!.target_career ?? MOCK_STUDENT.targetCareer : MOCK_STUDENT.targetCareer;
+  const trackCategory = TRACK_TO_CERT_CATEGORY[targetCareer];
+
   const [query, setQuery] = useState("");
   const [state, setState] = useState("");
+  const [trackOnly, setTrackOnly] = useState(Boolean(trackCategory));
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return CERTIFICATION_AGE_RULES.filter(
-      (c) =>
-        !q ||
+    return CERTIFICATION_AGE_RULES.filter((c) => {
+      if (trackOnly && trackCategory && c.category !== trackCategory) return false;
+      if (!q) return true;
+      return (
         c.title.toLowerCase().includes(q) ||
         c.category.toLowerCase().includes(q) ||
         c.description.toLowerCase().includes(q)
-    );
-  }, [query]);
+      );
+    });
+  }, [query, trackOnly, trackCategory]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -61,6 +85,19 @@ export function CertificationRulebook() {
           </select>
         </CardContent>
       </Card>
+
+      {trackCategory && (
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            type="button"
+            size="sm"
+            variant={trackOnly ? "default" : "outline"}
+            onClick={() => setTrackOnly((v) => !v)}
+          >
+            {trackOnly ? "Showing" : "Show"} only certs relevant to {CAREER_TRACK_LABELS[targetCareer]}
+          </Button>
+        </div>
+      )}
 
       <p className="text-sm text-muted-foreground">
         {results.length} of {CERTIFICATION_AGE_RULES.length} certifications

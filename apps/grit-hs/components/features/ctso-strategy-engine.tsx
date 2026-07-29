@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CAREER_TRACKS, CAREER_TRACK_LABELS, GRADE_LEVEL_LABELS, type CareerTrack } from "@/lib/constants";
 import { ROADMAP_TEMPLATES } from "@/lib/roadmap/templates";
+import { useDashboardData } from "@/lib/hooks/use-dashboard-data";
+import { MOCK_STUDENT } from "@/lib/mock-data";
 
 const ALL_EVENTS = CAREER_TRACKS.flatMap((track) =>
   ROADMAP_TEMPLATES[track].milestones
@@ -89,8 +91,22 @@ function SpeechTimer() {
 }
 
 export function CtsoStrategyEngine() {
+  const { data } = useDashboardData();
+  const isReal = Boolean(data?.authenticated && data.profile);
+  const myTrack = isReal ? data!.profile!.target_career ?? MOCK_STUDENT.targetCareer : MOCK_STUDENT.targetCareer;
+
   const [trackFilter, setTrackFilter] = useState<CareerTrack | "all">("all");
   const [query, setQuery] = useState("");
+  const autoSet = useRef(false);
+
+  // Default the filter to the student's own track the first time it's known,
+  // without fighting a manual selection they make afterward.
+  useEffect(() => {
+    if (!autoSet.current && myTrack) {
+      setTrackFilter(myTrack);
+      autoSet.current = true;
+    }
+  }, [myTrack]);
 
   const filtered = useMemo(() => {
     return ALL_EVENTS.filter((e) => {

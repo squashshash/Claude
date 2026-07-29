@@ -498,3 +498,43 @@ still lines up with what actually shipped at each point.
 
 29 of 31 original features are now live or mock; the remaining 2 are gone,
 not planned.
+
+## Round 13: button audit, real track-personalization, and an in-app Reminders widget
+
+Asked to make every button functional, make features actually specific to
+the student's career track, and add reminders. The button audit came back
+clean — every `<Button>`/`<button>` in the app already had a working
+handler, nothing was actually dead. The other two were real gaps:
+
+- **Real bug found and fixed**: `mentor-matcher.tsx` always matched against
+  `MOCK_STUDENT.targetCareer`, even for a real logged-in student with a
+  different real track — so "same track" mentors were wrong for anyone
+  not on the pre-med track. Now uses the real profile's `target_career`
+  when authenticated.
+- **CTSO Strategy Engine** now defaults its track filter to the student's
+  own real track on first load (still overridable to "All tracks" or any
+  other track manually).
+- **Certification Rulebook** adds a "Show only certs relevant to
+  [my track]" toggle, mapped via a real category (healthcare/finance/
+  engineering/technology per track); Law & Public Policy has no certs in
+  this catalog, so it's left unmapped rather than forced onto an unrelated
+  category.
+- **Job Board and Summer Program Directory** (both still sample-data
+  features) now tag each sample entry with a real career track and sort
+  track-matching entries first with a "Matches your track" badge — the
+  underlying listings are still sample data (per their existing banners),
+  but which ones surface first is now genuinely track-aware.
+- **New Reminders widget** (`components/dashboard/reminders.tsx`, on the
+  Dashboard Overview) combines two kinds of nudges, kept clearly separate:
+  - Real, computed nudges for logged-in students: incomplete milestones at
+    their current grade, days since their last hours-log entry, an empty
+    Credential Vault, and not yet having a public portfolio handle — all
+    read from data that already exists, nothing new to persist.
+  - One evergreen, track-specific tip per track, phrased around how each
+    track's key credential actually works structurally (AP exams run in
+    May; FINRA SIE/AWS/CompTIA/SOLIDWORKS certs are on-demand,
+    computer-based, no fixed date) rather than a specific date that would
+    go stale — same anti-fabrication discipline as the Tax Guide and Youth
+    Labor Laws features.
+  This is in-app only, on the dashboard — no email/push infrastructure was
+  added, since none was asked for.

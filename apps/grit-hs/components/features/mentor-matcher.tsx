@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { SampleDataBanner } from "./sample-data-banner";
 import { CAREER_TRACK_LABELS, type CareerTrack } from "@/lib/constants";
 import { MOCK_STUDENT } from "@/lib/mock-data";
+import { useDashboardData } from "@/lib/hooks/use-dashboard-data";
 
 const SAMPLE_MENTORS: { name: string; role: string; track: CareerTrack }[] = [
   { name: "Priya N.", role: "Nursing student, Class of 2028", track: "nursing_advanced_practice" },
@@ -16,8 +17,12 @@ const SAMPLE_MENTORS: { name: string; role: string; track: CareerTrack }[] = [
 ];
 
 export function MentorMatcher() {
-  const matched = SAMPLE_MENTORS.filter((m) => m.track === MOCK_STUDENT.targetCareer);
-  const others = SAMPLE_MENTORS.filter((m) => m.track !== MOCK_STUDENT.targetCareer);
+  const { data } = useDashboardData();
+  const isReal = Boolean(data?.authenticated && data.profile);
+  const targetCareer = isReal ? data!.profile!.target_career ?? MOCK_STUDENT.targetCareer : MOCK_STUDENT.targetCareer;
+
+  const matched = SAMPLE_MENTORS.filter((m) => m.track === targetCareer);
+  const others = SAMPLE_MENTORS.filter((m) => m.track !== targetCareer);
 
   return (
     <div className="flex flex-col gap-6">

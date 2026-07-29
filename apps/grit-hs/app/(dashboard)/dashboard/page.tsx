@@ -8,6 +8,7 @@ import { MOCK_STUDENT } from "@/lib/mock-data";
 import { useDashboardData } from "@/lib/hooks/use-dashboard-data";
 import { Badge } from "@/components/ui/badge";
 import { FocusModeToggle, type NextUpItem } from "@/components/dashboard/focus-mode";
+import { Reminders } from "@/components/dashboard/reminders";
 
 export default function DashboardPage() {
   const { data } = useDashboardData();
@@ -22,6 +23,8 @@ export default function DashboardPage() {
   let completed: number;
   let total: number;
   let nextUp: NextUpItem[];
+  let incompleteThisGrade: number;
+  let portfolioPublic: boolean | undefined;
 
   if (isReal) {
     const profile = data!.profile!;
@@ -40,6 +43,10 @@ export default function DashboardPage() {
         description: m.description,
         category: MILESTONE_CATEGORY_LABELS[m.category],
       }));
+    incompleteThisGrade = milestones.filter(
+      (m) => m.gradeLevel === currentGrade && m.status !== "completed" && m.status !== "locked"
+    ).length;
+    portfolioPublic = profile.portfolio_public;
   } else {
     const template = getRoadmapTemplate(MOCK_STUDENT.targetCareer);
     const withStatus = template.milestones.map((m) => ({
@@ -60,6 +67,10 @@ export default function DashboardPage() {
         description: milestone.description,
         category: MILESTONE_CATEGORY_LABELS[milestone.category],
       }));
+    incompleteThisGrade = withStatus.filter(
+      (m) => m.milestone.gradeLevel === currentGrade && m.status !== "completed" && m.status !== "locked"
+    ).length;
+    portfolioPublic = undefined;
   }
 
   const overallPct = total > 0 ? Math.round((completed / total) * 100) : 0;
@@ -84,6 +95,14 @@ export default function DashboardPage() {
         completed={completed}
         total={total}
         nextUp={nextUp}
+      />
+
+      <Reminders
+        isReal={isReal}
+        targetCareer={targetCareer}
+        currentGrade={currentGrade}
+        incompleteCount={incompleteThisGrade}
+        portfolioPublic={portfolioPublic}
       />
     </div>
   );

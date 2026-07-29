@@ -107,17 +107,16 @@ behind it yet), **planned** = nav entry + "coming soon" card only.
    4. Specialized High School 4-Year Planner — **live** (real career-track
       electives per year, paired with a generic — explicitly not
       state-specific — core graduation requirements model)
-2. Specialized Technical & Early College Hubs (CTECH / P-TECH)
-   5. CTECH Program Integration — planned (no national directory exists —
-      CTECH programs are too district-specific; would need per-district
-      manual collection like #7)
+2. Specialized Technical & Early College Hubs (P-TECH)
    6. P-TECH Associate Degree Tracker — **live** (a real explainer of what
-      P-TECH is + a link to the official ptech.org directory + a local
-      tracker for the student's own program — deliberately not a fabricated
-      national school roster)
-   7. CTE Articulation Credit Vault — planned (articulation agreements are
-      decentralized per-district legal MOUs in unstructured PDFs — no
-      aggregated source exists to build against honestly)
+      P-TECH is + IBM's real current P-TECH page (the old ptech.org
+      directory link died — see Round 10) + a local tracker for the
+      student's own program — deliberately not a fabricated national
+      school roster)
+   - #5 CTECH Program Integration and #7 CTE Articulation Credit Vault were
+     removed from the app entirely in Round 12 (see below) rather than left
+     as "coming soon" — #6's number stays as-is; #5/#7 are retired, not
+     renumbered.
 3. College Targeting & Major Alignment
    8. Career-to-College Target Matcher — **live** (real data from the U.S.
       Dept of Education's College Scorecard API — admit rate, tuition,
@@ -485,3 +484,17 @@ what identity shows for an opted-in student, and what cohort can see whom.
 
 Still 29 of 31 live or mock, 2 remain planned (#5, #7) — #31 moves from the
 "mock" bucket to "live" within that same count, it doesn't change the total.
+
+## Round 12: #5 and #7 removed entirely, not left as "coming soon"
+
+Rather than continue carrying #5 CTECH Program Integration and #7 CTE
+Articulation Credit Vault as permanent "coming soon" cards — three
+independent research passes already failed to find a real aggregated
+source for either (Round 10) — both were removed from the app outright:
+deleted from `lib/features/registry.ts`, no longer appear in the sidebar
+or feature grid at all. #6 P-TECH Tracker keeps its number; #5 and #7 are
+retired rather than renumbered, so the numbering elsewhere in this doc
+still lines up with what actually shipped at each point.
+
+29 of 31 original features are now live or mock; the remaining 2 are gone,
+not planned.

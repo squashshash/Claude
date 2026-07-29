@@ -183,6 +183,12 @@ Transit Planner.
   version — it was never actually persisted anywhere, even for the mock
   leaderboard, so showing a real one for other students would mean
   inventing a number. See `CLAUDE.md`'s Round 11.
+- **Round 13** (done): #5 CTECH Program Integration and #7 CTE Articulation
+  Credit Vault removed entirely — not left as permanent "coming soon"
+  cards. Three independent research passes already failed to find a real
+  aggregated source for either. Deleted from `lib/features/registry.ts`;
+  no longer appear in the sidebar or feature grid. #6 P-TECH Tracker keeps
+  its number; #5/#7 are retired, not renumbered. See `CLAUDE.md`'s Round 12.
 
 ## Stack
 

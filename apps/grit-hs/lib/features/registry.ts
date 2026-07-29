@@ -51,28 +51,14 @@ export const FEATURE_CATEGORIES: FeatureCategory[] = [
   },
   {
     slug: "ctech",
-    title: "Specialized Technical & Early College Hubs (CTECH / P-TECH)",
+    title: "Specialized Technical & Early College Hubs (P-TECH)",
     features: [
-      {
-        slug: "ctech-integration",
-        number: 5,
-        title: "CTECH Program Integration",
-        blurb: "Local Career & Technical Education courses mapped into your schedule.",
-        status: "planned",
-      },
       {
         slug: "p-tech-tracker",
         number: 6,
         title: "P-TECH Associate Degree Tracker",
         blurb: "What P-TECH really is, a link to the real directory, and your own program tracker.",
         status: "live",
-      },
-      {
-        slug: "cte-articulation-vault",
-        number: 7,
-        title: "CTE Articulation Credit Vault",
-        blurb: "CTE courses that grant automatic articulated college credit.",
-        status: "planned",
       },
     ],
   },

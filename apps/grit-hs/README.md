@@ -173,6 +173,16 @@ Transit Planner.
   already-shipped P-TECH Tracker linked to a now-dead `ptech.org` page.
   29 of 31 features are now live or mock; 2 remain planned. See
   `CLAUDE.md`'s Round 10 for the full verification trail.
+- **Round 12** (done): #31 Track Leaderboard converted from sample-peer mock
+  to a real, app-wide XP ranking — without adding a second privacy opt-in.
+  It reuses the existing public-portfolio handle toggle (#24): a student
+  only appears if they've already made their portfolio public, shown by
+  that same handle, nothing more exposed than `/p/[handle]` already shows.
+  New `GET /api/leaderboard` mirrors the existing service-role pattern from
+  `/api/portfolio/[handle]`. Streak was deliberately left out of the real
+  version — it was never actually persisted anywhere, even for the mock
+  leaderboard, so showing a real one for other students would mean
+  inventing a number. See `CLAUDE.md`'s Round 11.
 
 ## Stack
 

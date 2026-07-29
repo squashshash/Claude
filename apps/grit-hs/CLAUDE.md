@@ -196,8 +196,9 @@ behind it yet), **planned** = nav entry + "coming soon" card only.
    30. Parent Read-Only Dashboard — **live** (same real/sample stats +
        full read-only Milestone Matrix; no forms, no upload controls, no
        edit paths at all)
-   31. Track Leaderboard (bonus, not in the original 30) — **mock**,
-       anonymized sample peers ranked by XP alongside the real student XP
+   31. Track Leaderboard (bonus, not in the original 30) — **live** (see
+       Round 11: real, app-wide, gated on the existing public-portfolio
+       opt-in — no new privacy surface)
 
 ## Round 4: visualization + gamification additions
 
@@ -454,3 +455,33 @@ against each other).
   Schools + CUNY's NYC College of Technology + IBM).
 
 29 of 31 features are now live or mock; 2 remain planned (#5, #7).
+
+## Round 11: #31 Track Leaderboard, real — without adding a new privacy surface
+
+Asked whether to build a real cross-student leaderboard, the two questions
+that actually mattered were settled explicitly rather than assumed:
+what identity shows for an opted-in student, and what cohort can see whom.
+
+- **Identity**: reuses the existing public-portfolio opt-in (`handle` +
+  `portfolio_public` from Round 8/#24) rather than building a second,
+  parallel opt-in toggle. A student only appears on the leaderboard if
+  they've already made their portfolio public — no new column, no new
+  consent surface, no new field ever exposed beyond what `/p/[handle]`
+  already shows publicly.
+- **Cohort**: app-wide, not scoped to career track — simpler query, and the
+  identity constraint above already limits who appears to begin with.
+- **`GET /api/leaderboard`** (new) uses the service-role client the same
+  way `/api/portfolio/[handle]` already does — selecting only `handle` and
+  `xp_points` for `portfolio_public=true` rows, ordered by XP, capped at
+  50. The requester's own real XP is always included via the regular
+  authenticated client (their own row, RLS-covered), even before they've
+  opted in, with a visible prompt to opt in if they haven't.
+- **Streak was deliberately left out of the real version** — `profiles`
+  has no persisted streak column; the mock leaderboard's streak numbers
+  were always local-only `useState` in `streak-score.tsx`, never real, so
+  showing a fabricated streak for other students would be worse than
+  showing none. The real leaderboard shows XP only; mock mode keeps its
+  existing streak column, unchanged.
+
+Still 29 of 31 live or mock, 2 remain planned (#5, #7) — #31 moves from the
+"mock" bucket to "live" within that same count, it doesn't change the total.

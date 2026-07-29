@@ -17,16 +17,18 @@ export function PTechTracker() {
         <CardContent className="flex items-start gap-3 p-4 text-sm text-muted-foreground">
           <Info className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
           There&apos;s no single national database of P-TECH schools with an open API, so this doesn&apos;t
-          try to look yours up automatically. Find your program on the{" "}
+          try to look yours up automatically — and the old ptech.org directory is no longer live. IBM,
+          the model&apos;s original industry partner, still maintains a real overview page:{" "}
           <a
-            href="https://www.ptech.org/our-schools"
+            href="https://www.ibm.com/thought-leadership/ptech/index.html"
             target="_blank"
             rel="noreferrer"
             className="font-medium text-accent underline"
           >
-            official P-TECH school directory
-          </a>{" "}
-          and track it here yourself.
+            IBM's P-TECH overview
+          </a>
+          . For your own school&apos;s exact details, ask your CTE coordinator or counselor, then track
+          it here yourself.
         </CardContent>
       </Card>
 
@@ -48,6 +50,12 @@ export function PTechTracker() {
             <span className="font-semibold text-foreground">Industry partnership:</span> a local
             employer provides mentoring, workplace visits, and often a first-in-line internship or job
             interview for graduates.
+          </p>
+          <p>
+            <span className="font-semibold text-foreground">Where it started:</span> the first P-TECH
+            opened in Brooklyn in September 2011 — a partnership between NYC Public Schools, CUNY&apos;s
+            New York City College of Technology, and IBM. Over 300 schools nationwide now follow the
+            same model.
           </p>
         </CardContent>
       </Card>

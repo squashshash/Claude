@@ -158,6 +158,21 @@ Transit Planner.
   — the literal skill-tree idea Round 4 explicitly declined to build,
   built now as a real interactive feature against real per-user data. See
   `CLAUDE.md`'s Round 9 for the full list.
+- **Round 11** (done): #3 Dual-Enrollment Predictor and #9 BS/MD Planner
+  converted from "coming soon" to real, but only after three independent
+  AI research passes (identical prompt to ChatGPT, Gemini, and Copilot)
+  were cross-referenced and individually spot-verified against primary
+  sources — the first check alone caught one research pass conflating two
+  different universities' programs. Only what survived verification
+  shipped: California's ASSIST and Texas's TCCNS for #3, and 5
+  individually-confirmed BS/MD programs (GWU, Howard, USF, UAB, Brown) for
+  #9, each linking to its real official source rather than asserting
+  unverified specifics. #5 CTECH and #7 CTE Articulation stayed planned —
+  none of the three research passes agreed with each other on a single
+  concrete example. Also fixed a real bug found in the process: the
+  already-shipped P-TECH Tracker linked to a now-dead `ptech.org` page.
+  29 of 31 features are now live or mock; 2 remain planned. See
+  `CLAUDE.md`'s Round 10 for the full verification trail.
 
 ## Stack
 

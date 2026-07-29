@@ -37,8 +37,8 @@ export const FEATURE_CATEGORIES: FeatureCategory[] = [
         slug: "dual-enrollment-predictor",
         number: 3,
         title: "Dual-Enrollment & Transferability Predictor",
-        blurb: "Which community-college courses actually transfer into your target major.",
-        status: "planned",
+        blurb: "Real transfer systems for CA and TX, verified — everywhere else, ask your target school.",
+        status: "live",
       },
       {
         slug: "four-year-planner",
@@ -91,8 +91,8 @@ export const FEATURE_CATEGORIES: FeatureCategory[] = [
         slug: "direct-admit-planner",
         number: 9,
         title: "Direct-Admit & BS/MD Pathway Planner",
-        blurb: "The exact prerequisites specialized direct-admit programs check for.",
-        status: "planned",
+        blurb: "5 individually-verified BS/MD programs, plus AAMC's full official directory.",
+        status: "live",
       },
       {
         slug: "essay-deconstructor",

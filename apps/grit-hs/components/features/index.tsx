@@ -26,6 +26,8 @@ import { LiabilityHub } from "./liability-hub";
 import { TaxGuide } from "./tax-guide";
 import { TransitPlanner } from "./transit-planner";
 import { PublicHandle } from "./public-handle";
+import { DualEnrollmentPredictor } from "./dual-enrollment-predictor";
+import { DirectAdmitPlanner } from "./direct-admit-planner";
 
 export const FEATURE_COMPONENTS: Record<string, ComponentType> = {
   "gpa-calculator": GpaCalculator,
@@ -55,4 +57,6 @@ export const FEATURE_COMPONENTS: Record<string, ComponentType> = {
   "tax-guide": TaxGuide,
   "transit-planner": TransitPlanner,
   "public-handle": PublicHandle,
+  "dual-enrollment-predictor": DualEnrollmentPredictor,
+  "direct-admit-planner": DirectAdmitPlanner,
 };

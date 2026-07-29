@@ -98,7 +98,12 @@ behind it yet), **planned** = nav entry + "coming soon" card only.
 1. High-Yield Academics & Advanced Placement
    1. Target GPA & Grade-Aiming Calculator — **live**
    2. AP/IB Course Optimizer — **live**
-   3. Dual-Enrollment & Transferability Predictor — planned
+   3. Dual-Enrollment & Transferability Predictor — **live** (scoped down:
+      only California's ASSIST and Texas's TCCNS are independently
+      verified real statewide systems, so the tool names those two and
+      links out to them; every other state gets an honest "no verified
+      database found, ask your target school's registrar" rather than a
+      fabricated course-mapping table)
    4. Specialized High School 4-Year Planner — **live** (real career-track
       electives per year, paired with a generic — explicitly not
       state-specific — core graduation requirements model)
@@ -120,11 +125,12 @@ behind it yet), **planned** = nav entry + "coming soon" card only.
       not a curated "best for your track" ranking, since that would need
       CIP-code field-of-study filtering not yet verified — see
       `app/api/college-matcher/route.ts`, needs `COLLEGE_SCORECARD_API_KEY`)
-   9. Direct-Admit & BS/MD Pathway Planner — planned (AAMC's official
-      directory is real, but its ~50-70 programs' exact GPA/test-score
-      cutoffs and admissions status weren't verified this round — building
-      it with unverified specifics risks a wrong number for a real medical
-      admissions decision, worse than staying "coming soon")
+   9. Direct-Admit & BS/MD Pathway Planner — **live** (scoped down: only 5
+      programs — GWU, Howard, USF, UAB EMSAP, Brown PLME — were
+      individually checked against their own admissions pages rather than
+      trusted from a single research pass; every other AAMC-listed program
+      is left out on purpose rather than seeded with an unverified GPA/test
+      cutoff, with a link to AAMC's official full directory instead)
    10. University Essay Prompt Deconstructor — **live** (splits any pasted
        prompt into its sub-questions + word-count target, pairs each with
        one of your own completed milestones — no AI call, no fabricated
@@ -396,6 +402,55 @@ Leaderboard stays mock** — a real cross-student leaderboard needs opt-in
 cohort matching and privacy controls (this is a minors' product; the
 public-portfolio and hours-verification features are deliberately careful
 about exactly which fields ever leave the service-role boundary), which is
-its own explicit design ask, not a quick follow-up. #3, #5, #7, #9 also
-remain planned, unchanged — still blocked on the same lack of an
-aggregated real data source documented in Round 6/7.
+its own explicit design ask, not a quick follow-up.
+
+## Round 10: #3 and #9 converted from "coming soon" to real, after
+## three independent research passes and manual spot-verification
+
+ChatGPT, Gemini, and Copilot were each given the identical deep-research
+prompt for the 4 remaining planned features (#3, #5, #7, #9), specifically
+so the results could be cross-referenced against each other rather than
+trusted individually — and it was worth it: the very first spot-check (of
+Augusta University's BS/MD program) found ChatGPT's answer had conflated
+it with UAB's differently-named "EMSAP" program and asserted a GPA number
+with no independent confirmation. That's exactly the failure mode Round
+6-9 already worried about, so nothing from any of the three reports was
+seeded until it was independently re-checked (via direct fetch/search
+against the primary source, not just cross-reading the three reports
+against each other).
+
+- **#3 Dual-Enrollment & Transferability Predictor** — only California's
+  ASSIST and Texas's TCCNS held up: real, public, independently confirmed
+  systems (all 3 research passes converged on both). One thing all three
+  reports got wrong or omitted: ASSIST's *website* is real and free to
+  search by a human, but its developer API is not an open public API —
+  ASSIST's own Winter 2025 newsletter says API access is still rolling out
+  to "approved subscribers and campus partners," so this is a real/link-out
+  feature, not a live automated query, same shape as #6/#12/#13/#16/#18.
+  Every other state gets an honest "no verified database found" rather
+  than the specific (unverifiable) course-mapping examples all three
+  reports offered for states like Florida, Virginia, or Illinois.
+- **#9 Direct-Admit & BS/MD Pathway Planner** — 5 programs made it in,
+  each individually confirmed against its own admissions page: George
+  Washington (3.60 GPA, ~90th percentile SAT/ACT), Howard (3.5 GPA,
+  SAT 1300+/ACT 28+ — converged independently in 2 of the 3 reports),
+  USF's 7-year program (4.0 weighted GPA, SAT 1500+/ACT 34+, also
+  converged in 2 reports), UAB's EMSAP (correctly named, 3.5 GPA,
+  SAT 1360+/ACT 30+), and Brown's PLME (deliberately publishes no numeric
+  cutoff — confirmed by 2 of 3 reports agreeing on that absence, which is
+  itself a safely statable fact). AAMC's own official directory
+  (~50-70 programs total) is linked for everything else, explicitly
+  labeled unverified rather than seeded.
+- **#5 CTECH Program Integration and #7 CTE Articulation Vault stay
+  planned** — all three research passes gave completely non-overlapping
+  sets of specific schools/agreements (zero shared examples between any
+  two reports), which is itself a signal, not just a coverage gap; none of
+  it cleared the same bar #3/#9 did.
+- Also fixed: the already-shipped #6 P-TECH Tracker linked to
+  `ptech.org/our-schools` as "the official directory" — confirmed dead
+  (parked domain) by an independent check and by all 3 research passes.
+  Replaced with IBM's real, current P-TECH overview page, and added the
+  verified origin story (Brooklyn, September 2011, NYC Public
+  Schools + CUNY's NYC College of Technology + IBM).
+
+29 of 31 features are now live or mock; 2 remain planned (#5, #7).

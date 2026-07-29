@@ -158,9 +158,11 @@ behind it yet), **planned** = nav entry + "coming soon" card only.
        `TRANSITLAND_API_KEY`.
 7. Real-World Experience & Extracurriculars
    19. CTSO Competition Strategy Engine — **live**
-   20. AI-Powered Cold Outreach Generator — **mock** (template-based
-       mail-merge for now; wiring an actual LLM call is a Phase 3 item once
-       an AI SDK key is configured)
+   20. AI-Powered Cold Outreach Generator — **live** (real mail-merge
+       template plus a "Generate with AI" button that calls
+       `/api/outreach/generate` — Vercel AI SDK + Claude — and says so
+       plainly if `ANTHROPIC_API_KEY` isn't configured rather than faking a
+       result)
    21. Clinical & Volunteer Hours Verification Logger — **live** (tries
        `/api/hours` first, falls back to local state; has a real printable
        PDF summary and a real public supervisor-confirmation link at
@@ -336,3 +338,64 @@ trusted (same process used for the 0003 storage migration).
   management UI (set handle, toggle public, preview link).
 
 27 of 31 features are now live or mock; 4 remain planned (#3, #5, #7, #9).
+
+## Round 9: first real deployment, and everything that broke because of it
+
+Every prior round was built and type-checked without ever running against a
+live Supabase project or a real Vercel deployment (see "Auth & backend
+status" above). Once actually deployed this round, several integration
+bugs surfaced that no amount of local type-checking could have caught —
+each is a real fix, not a config tweak:
+
+- **Missing baseline Postgres grants** (`0005_grant_baseline_schema_privileges.sql`)
+  — a Supabase project provisioned via the Management API (rather than the
+  dashboard's "New project" button) never got `anon`/`authenticated`/
+  `service_role` granted `SELECT`/`INSERT`/`UPDATE`/`DELETE` on any table.
+  Every request failed with `permission denied for table X` one layer
+  *before* RLS was ever evaluated — including for `service_role`, so even
+  the admin client couldn't read `profiles`. This silently made every real
+  signup/write impossible; RLS policies were all correct and irrelevant
+  until this was fixed.
+- **Onboarding redirect gap** (`lib/supabase/middleware.ts`) — `signUp()`
+  doesn't return a session until email confirmation, so the client-side
+  `router.push("/onboarding")` after signup never ran; after confirming
+  and logging in, middleware sent every authenticated user straight to
+  `/dashboard` with no check for whether a `profiles` row existed yet. Real
+  accounts got stuck seeing only the mock-data fallback forever, with no
+  path back to onboarding. Middleware now redirects an authenticated user
+  with no profile to `/onboarding`.
+- **Dashboard and Roadmap pages were never wired to real data at all** —
+  unlike the 5 features that already try `useDashboardData()` first, both
+  `app/(dashboard)/dashboard/page.tsx` and `app/(dashboard)/roadmap/page.tsx`
+  (plus `components/features/parent-dashboard.tsx`) rendered `MOCK_STUDENT`
+  unconditionally. All three now follow the same real/mock pattern (with
+  the "Your data"/"Sample data" badge) as the rest of the app.
+- **No way to actually mark a milestone complete against real data** — mock
+  mode infers status purely from grade-level ordering
+  (`lib/roadmap/derive-status.ts`); real `milestones.status` rows existed
+  in the DB but nothing ever updated them past `not_started`. Added
+  `PATCH /api/milestones/[id]` (ownership-checked via the existing RLS
+  policy) and a "Mark complete"/"Mark incomplete" button on every
+  `MilestoneCard`, which also awards/revokes `MILESTONE_XP_AWARD` (100 XP)
+  on the student's `profiles.xp_points`.
+- **New Skill Tree visualization** (`components/roadmap/skill-tree.tsx`) —
+  a hand-rolled SVG tree on `/roadmap`, one branch per milestone category
+  fanning out from a trunk, one node per grade-level milestone along each
+  branch, colored by real status; clicking a node (real data only) marks
+  it complete/incomplete through the same endpoint above. This is the
+  literal skill-tree idea noted as explicitly-not-built in Round 4 — built
+  now as a real interactive feature against real per-user data rather than
+  a decorative visual, once there was real data to visualize.
+- Corrected the #20 Cold Outreach status above from **mock** to **live** —
+  it already called the real `/api/outreach/generate` endpoint as of an
+  earlier round; this file's own status line just hadn't been updated to
+  match.
+
+Also confirmed and left alone rather than silently building: **#31 Track
+Leaderboard stays mock** — a real cross-student leaderboard needs opt-in
+cohort matching and privacy controls (this is a minors' product; the
+public-portfolio and hours-verification features are deliberately careful
+about exactly which fields ever leave the service-role boundary), which is
+its own explicit design ask, not a quick follow-up. #3, #5, #7, #9 also
+remain planned, unchanged — still blocked on the same lack of an
+aggregated real data source documented in Round 6/7.

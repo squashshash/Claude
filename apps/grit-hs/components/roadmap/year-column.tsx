@@ -1,8 +1,7 @@
 import { Progress } from "@/components/ui/progress";
 import { MilestoneCard } from "@/components/roadmap/milestone-card";
-import { deriveMilestoneStatus } from "@/lib/roadmap/derive-status";
-import { GRADE_LEVEL_LABELS, type GradeLevel } from "@/lib/constants";
-import type { MilestoneTemplate } from "@/types/roadmap";
+import { GRADE_LEVEL_LABELS, type GradeLevel, type MilestoneStatus } from "@/lib/constants";
+import type { ResolvedMilestone } from "@/types/roadmap";
 
 export function YearColumn({
   gradeLevel,
@@ -10,18 +9,17 @@ export function YearColumn({
   currentGrade,
   studentAge,
   studentState,
+  onToggleComplete,
 }: {
   gradeLevel: GradeLevel;
-  milestones: MilestoneTemplate[];
+  milestones: ResolvedMilestone[];
   currentGrade: GradeLevel;
   studentAge: number;
   studentState?: string;
+  onToggleComplete?: (id: string, nextStatus: MilestoneStatus) => Promise<void> | void;
 }) {
-  const statuses = milestones.map((m) =>
-    deriveMilestoneStatus(m, currentGrade, studentAge, studentState)
-  );
-  const completedCount = statuses.filter((s) => s === "completed").length;
-  const progressPct = Math.round((completedCount / milestones.length) * 100);
+  const completedCount = milestones.filter((m) => m.status === "completed").length;
+  const progressPct = milestones.length ? Math.round((completedCount / milestones.length) * 100) : 0;
   const isCurrentYear = gradeLevel === currentGrade;
 
   return (
@@ -38,13 +36,15 @@ export function YearColumn({
       </div>
       <Progress value={progressPct} className="h-3" />
       <div className="flex flex-col gap-3">
-        {milestones.map((milestone, i) => (
+        {milestones.map(({ id, milestone, status }) => (
           <MilestoneCard
-            key={`${milestone.gradeLevel}-${milestone.category}`}
+            key={id ?? `${milestone.gradeLevel}-${milestone.category}-${milestone.title}`}
+            id={id}
             milestone={milestone}
-            status={statuses[i]}
+            status={status}
             studentAge={studentAge}
             studentState={studentState}
+            onToggleComplete={onToggleComplete}
           />
         ))}
       </div>

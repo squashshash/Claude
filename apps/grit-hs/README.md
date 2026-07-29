@@ -129,14 +129,35 @@ requires credentials this sandbox doesn't have. Concretely:
   alongside the credential files and store the path).
 
 To actually run this against a real backend: create a Supabase project, run
-all four files in `supabase/migrations/` against it in order (the third
+all five files in `supabase/migrations/` against it in order (the third
 creates the `credentials` Storage bucket + its RLS policies, the fourth
-adds the public-portfolio columns), copy `.env.local.example` to
-`.env.local` and fill in the values, and (optionally) add
-`ANTHROPIC_API_KEY` for live cold-outreach generation,
+adds the public-portfolio columns, the fifth grants `anon`/`authenticated`/
+`service_role` baseline table privileges — projects created via the
+dashboard's "New project" button already have these, but ones provisioned
+through the Management API don't, and every query fails with `permission
+denied` one layer before RLS is even evaluated until it's applied), copy
+`.env.local.example` to `.env.local` and fill in the values, and
+(optionally) add `ANTHROPIC_API_KEY` for live cold-outreach generation,
 `COLLEGE_SCORECARD_API_KEY` (free from api.data.gov) for the College
 Matcher, and `TRANSITLAND_API_KEY` (free from transit.land) for the
 Transit Planner.
+
+- **Round 10** (done): first real deployment (Vercel + a live Supabase
+  project), and every integration bug that surfaced only once it was
+  actually live — none of which local type-checking could have caught. The
+  missing baseline grants above; an onboarding-redirect gap where a
+  logged-in user with no `profiles` row yet had no path back to
+  `/onboarding` (middleware now sends them there); the Dashboard and
+  Roadmap pages (plus the Parent Dashboard) were never wired to real data
+  at all, always rendering `MOCK_STUDENT` regardless of auth state — now
+  fixed to match the same real/mock pattern as everything else; and real
+  milestones had no way to actually be marked complete (mock mode only
+  ever derived status from grade level). Added `PATCH /api/milestones/[id]`
+  plus a complete/incomplete toggle that awards 100 XP, and a new
+  **Skill Tree** visualization on `/roadmap` (`components/roadmap/skill-tree.tsx`)
+  — the literal skill-tree idea Round 4 explicitly declined to build,
+  built now as a real interactive feature against real per-user data. See
+  `CLAUDE.md`'s Round 9 for the full list.
 
 ## Stack
 

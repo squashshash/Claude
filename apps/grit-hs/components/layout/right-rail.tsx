@@ -27,12 +27,20 @@ export function RightRail() {
     setExpanded(false);
   }
 
+  function openOverview() {
+    setActiveSection(null);
+    setOpen(true);
+    setExpanded(false);
+  }
+
   return (
     <>
       {/* Fully collapsed by default — a small pull tab is the only thing on
           screen so it never overlaps the header's XP badge/avatar. Clicking
           it slides the full icon rail out; clicking again (or picking a
-          section) collapses it back. */}
+          section) collapses it back. Desktop only — below md there's no
+          room for a hover-friendly edge rail, so mobile gets a floating
+          action button instead (below) that opens the same drawer directly. */}
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
@@ -43,6 +51,15 @@ export function RightRail() {
         <motion.span animate={{ rotate: expanded ? 0 : 180 }} transition={{ duration: 0.2 }}>
           <ChevronLeft className="h-4 w-4" aria-hidden="true" />
         </motion.span>
+      </button>
+
+      <button
+        type="button"
+        onClick={openOverview}
+        aria-label="Open Life Panel"
+        className="fixed bottom-5 right-5 z-20 flex h-14 w-14 items-center justify-center rounded-full border border-panel-border/50 bg-panel/95 text-panel-highlight shadow-[0_8px_28px_-6px_rgba(0,0,0,0.6)] backdrop-blur-xl transition-transform active:scale-95 md:hidden print:hidden"
+      >
+        <Sparkles className="h-6 w-6" aria-hidden="true" />
       </button>
 
       <AnimatePresence>

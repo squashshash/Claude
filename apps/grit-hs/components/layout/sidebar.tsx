@@ -106,14 +106,20 @@ const FEATURE_ICONS: Record<string, LucideIcon> = {
   "track-leaderboard": BarChart3,
 };
 
-export function Sidebar() {
+/**
+ * The actual nav — logo, pinned links, category accordion, settings — shared
+ * between the always-visible desktop <aside> and the mobile slide-in sheet
+ * (MobileSidebar) so the 29-feature registry only has one render path.
+ * `onNavigate` lets the mobile sheet close itself when a link is tapped.
+ */
+export function SidebarNavContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const [openCategory, setOpenCategory] = useState<string | null>(
     FEATURE_CATEGORIES.find((c) => c.features.some((f) => pathname?.includes(f.slug)))?.slug ?? null
   );
 
   return (
-    <aside className="relative z-10 hidden w-72 shrink-0 flex-col border-r border-glass-border/60 bg-card/18 shadow-[inset_-1px_0_0_0_hsl(var(--glass-highlight)/0.2)] backdrop-blur-2xl backdrop-saturate-200 md:flex print:hidden">
+    <>
       <div className="flex h-20 items-center gap-2 border-b border-glass-border/30 px-6">
         <span className="bg-gradient-to-br from-primary to-accent bg-clip-text font-display text-2xl font-bold tracking-tight text-transparent">
           Grit
@@ -126,6 +132,7 @@ export function Sidebar() {
             <Link
               key={href}
               href={href}
+              onClick={onNavigate}
               className={cn(
                 "font-interface flex items-center gap-3 rounded-full px-4 py-2.5 text-base transition-all duration-200 hover:translate-x-0.5",
                 active
@@ -176,6 +183,7 @@ export function Sidebar() {
                           <Link
                             key={feature.slug}
                             href={href}
+                            onClick={onNavigate}
                             className={cn(
                               "font-interface flex items-center gap-2 rounded-full px-4 py-2 text-sm transition-all duration-200 hover:translate-x-0.5",
                               active
@@ -203,12 +211,21 @@ export function Sidebar() {
       <div className="border-t border-glass-border/30 p-3">
         <Link
           href="/settings"
+          onClick={onNavigate}
           className="font-interface flex items-center gap-3 rounded-full px-4 py-2.5 text-base font-medium text-foreground/80 transition-all duration-200 hover:translate-x-0.5 hover:bg-muted hover:text-foreground"
         >
           <Settings className="h-5 w-5" aria-hidden="true" />
           Settings
         </Link>
       </div>
+    </>
+  );
+}
+
+export function Sidebar() {
+  return (
+    <aside className="relative z-10 hidden w-72 shrink-0 flex-col border-r border-glass-border/60 bg-card/18 shadow-[inset_-1px_0_0_0_hsl(var(--glass-highlight)/0.2)] backdrop-blur-2xl backdrop-saturate-200 md:flex print:hidden">
+      <SidebarNavContent />
     </aside>
   );
 }

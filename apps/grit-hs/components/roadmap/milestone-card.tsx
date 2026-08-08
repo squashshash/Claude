@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { GraduationCap, ShieldCheck, Trophy, Briefcase, Check, Undo2, Loader2, type LucideIcon } from "lucide-react";
+import { GraduationCap, ShieldCheck, Trophy, Briefcase, Check, Undo2, Loader2, CalendarClock, type LucideIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { AgeGateBadge } from "@/components/certifications/age-gate-badge";
 import { cn } from "@/lib/utils";
 import type { MilestoneCategory, MilestoneStatus } from "@/lib/constants";
@@ -37,18 +38,24 @@ export function MilestoneCard({
   status,
   studentAge,
   studentState,
+  plannedFor,
   onToggleComplete,
+  onSetPlannedFor,
 }: {
   id?: string;
   milestone: MilestoneTemplate;
   status: MilestoneStatus;
   studentAge: number;
   studentState?: string;
+  plannedFor?: string | null;
   onToggleComplete?: (id: string, nextStatus: MilestoneStatus) => Promise<void> | void;
+  onSetPlannedFor?: (id: string, date: string) => Promise<void> | void;
 }) {
   const Icon = CATEGORY_ICON[milestone.category];
   const [pending, setPending] = useState(false);
+  const [savingDate, setSavingDate] = useState(false);
   const canToggle = Boolean(id && onToggleComplete) && status !== "locked";
+  const canPlan = Boolean(id && onSetPlannedFor) && status !== "completed" && status !== "locked";
 
   const handleToggle = async () => {
     if (!id || !onToggleComplete || pending) return;
@@ -57,6 +64,16 @@ export function MilestoneCard({
       await onToggleComplete(id, status === "completed" ? "not_started" : "completed");
     } finally {
       setPending(false);
+    }
+  };
+
+  const handlePlanDate = async (date: string) => {
+    if (!id || !onSetPlannedFor || !date) return;
+    setSavingDate(true);
+    try {
+      await onSetPlannedFor(id, date);
+    } finally {
+      setSavingDate(false);
     }
   };
 
@@ -79,6 +96,26 @@ export function MilestoneCard({
         {milestone.certRef && (
           <div className="pt-1">
             <AgeGateBadge certRef={milestone.certRef} studentAge={studentAge} studentState={studentState} />
+          </div>
+        )}
+        {canPlan && (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <CalendarClock className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            {plannedFor ? (
+              <span>
+                Planned for {new Date(plannedFor + "T00:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+              </span>
+            ) : (
+              <span>When will you do this?</span>
+            )}
+            <Input
+              type="date"
+              defaultValue={plannedFor ?? undefined}
+              disabled={savingDate}
+              onChange={(e) => handlePlanDate(e.target.value)}
+              className="h-7 w-auto py-0 text-xs"
+              aria-label="When will you do this milestone?"
+            />
           </div>
         )}
         {canToggle && (

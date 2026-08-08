@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { enforceRateLimit } from "@/lib/api/rate-limit-response";
+import { clientIp } from "@/lib/rate-limit";
 
 function isConfigured() {
   return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
@@ -18,10 +20,15 @@ async function findEntry(token: string) {
 }
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ token: string }> }
 ) {
   if (!isConfigured()) return notConfigured();
+
+  // Unauthenticated: the token is a UUID so guessing is impractical, but cap
+  // per-IP anyway so the endpoint can't be used to probe for valid tokens.
+  const limited = enforceRateLimit(`hours-verify:${clientIp(request)}`, 30, 60);
+  if (limited) return limited;
 
   const { token } = await params;
   const { data, error } = await findEntry(token);
@@ -41,10 +48,13 @@ export async function GET(
 }
 
 export async function POST(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ token: string }> }
 ) {
   if (!isConfigured()) return notConfigured();
+
+  const limited = enforceRateLimit(`hours-verify-post:${clientIp(request)}`, 15, 60);
+  if (limited) return limited;
 
   const { token } = await params;
   const { data: entry, error: lookupError } = await findEntry(token);

@@ -9,7 +9,11 @@ import type { CareerTrack, GradeLevel } from "@/lib/constants";
 // actually work — not specific calendar dates, which would go stale. Where a
 // program has a fixed annual window (AP exams), that's stated as a season,
 // not a date, with a pointer to the real source for this year's exact one.
-const TRACK_GUIDANCE: Record<CareerTrack, string> = {
+//
+// Partial, not a full Record — only populated where a specific, verified
+// exam-window fact is known. Every other track gets GENERIC_GUIDANCE rather
+// than a fabricated claim about a specific certification's testing schedule.
+const TRACK_GUIDANCE: Partial<Record<CareerTrack, string>> = {
   pre_med_clinical_healthcare:
     "AP Biology/Chemistry exams run in early May every year, with registration usually opening the previous fall through your school. Ask your AP coordinator for this year's exact registration deadline.",
   nursing_advanced_practice:
@@ -22,7 +26,12 @@ const TRACK_GUIDANCE: Record<CareerTrack, string> = {
     "SOLIDWORKS certification exams (CSWA/CSWP) are on-demand via Certiport testing centers — no fixed annual date, schedule whenever your modeling skills are ready.",
   law_public_policy:
     "Mock Trial and Moot Court seasons typically run fall through spring — check your CTSO or school's own calendar for this year's exact competition dates.",
+  cybersecurity:
+    "CompTIA Security+ exams are computer-based and available on-demand year-round via Pearson VUE — no fixed test window, so you can schedule one as soon as you're ready.",
 };
+
+const GENERIC_GUIDANCE =
+  "Check with your school counselor or CTSO advisor for this year's exact deadlines and testing windows for your track's key milestones.";
 
 interface RemindersProps {
   isReal: boolean;
@@ -80,7 +89,7 @@ export function Reminders({
         icon: Clock,
         text:
           daysSinceHours === Infinity
-            ? "You haven't logged any hours yet — start in the Hours Logger."
+            ? "You haven't logged any hours yet — log your first entry from the panel on the right."
             : `It's been ${daysSinceHours} days since you last logged hours.`,
       });
     }
@@ -119,7 +128,7 @@ export function Reminders({
         ))}
         <div className="flex items-start gap-3 rounded-md border border-accent/40 bg-accent/10 p-3 text-sm text-muted-foreground">
           <Info className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
-          <span>{TRACK_GUIDANCE[targetCareer]}</span>
+          <span>{TRACK_GUIDANCE[targetCareer] ?? GENERIC_GUIDANCE}</span>
         </div>
         {nudges.length === 0 && isReal && (
           <p className="text-sm text-muted-foreground">You&apos;re caught up — nothing urgent right now.</p>

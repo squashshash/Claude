@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { rubikMonoOne, sourGummy } from "./fonts";
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -13,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`${rubikMonoOne.variable} ${sourGummy.variable}`}>
       <body>
         <Providers>{children}</Providers>
       </body>

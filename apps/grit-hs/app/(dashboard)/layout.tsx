@@ -1,6 +1,7 @@
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { AmbientGlow } from "@/components/layout/ambient-glow";
+import { RightRail } from "@/components/layout/right-rail";
 import { MOCK_STUDENT } from "@/lib/mock-data";
 import { createClient } from "@/lib/supabase/server";
 
@@ -40,6 +41,7 @@ export default async function DashboardLayout({
         <Header studentName={studentName} xp={xp} />
         <main className="flex-1 overflow-y-auto p-6">{children}</main>
       </div>
+      <RightRail />
     </div>
   );
 }

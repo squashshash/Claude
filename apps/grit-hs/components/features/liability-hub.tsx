@@ -28,7 +28,7 @@ export function LiabilityHub() {
         <CardContent className="flex flex-col gap-3 text-sm text-muted-foreground">
           <p>
             Student clinical shadowing generally falls under HIPAA&apos;s definition of{" "}
-            <span className="font-semibold text-foreground">"health care operations"</span> — training
+            <span className="font-semibold text-foreground">&ldquo;health care operations&rdquo;</span> — training
             programs where students learn under supervision. That means facilities usually don&apos;t
             need to get individual patient authorization just for you to observe.
           </p>

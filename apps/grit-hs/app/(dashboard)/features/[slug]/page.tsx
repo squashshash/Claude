@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getFeature, getFeatureCategory } from "@/lib/features/registry";
 import { FEATURE_COMPONENTS } from "@/components/features";
 import { ComingSoon } from "@/components/features/coming-soon";
@@ -10,8 +10,16 @@ const STATUS_LABEL: Record<string, string> = {
   planned: "Coming soon",
 };
 
+// Retired from the feature grid — its UI now lives in the right-side panel
+// instead. Redirect rather than 404 for anyone with the old URL bookmarked.
+const RETIRED_REDIRECTS: Record<string, string> = {
+  "hours-logger": "/dashboard",
+};
+
 export default async function FeaturePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  if (RETIRED_REDIRECTS[slug]) redirect(RETIRED_REDIRECTS[slug]);
+
   const feature = getFeature(slug);
   if (!feature) notFound();
 

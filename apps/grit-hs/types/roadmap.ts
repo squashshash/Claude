@@ -33,4 +33,6 @@ export interface ResolvedMilestone {
   id?: string;
   milestone: MilestoneTemplate;
   status: MilestoneStatus;
+  /** Implementation-intention date ("when will you do this?") — real milestones only. */
+  plannedFor?: string | null;
 }

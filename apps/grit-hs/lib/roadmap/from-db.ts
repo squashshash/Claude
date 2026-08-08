@@ -7,6 +7,7 @@ type MilestoneRow = Database["public"]["Tables"]["milestones"]["Row"];
 export interface DbMilestone extends MilestoneTemplate {
   id: string;
   status: MilestoneStatus;
+  plannedFor: string | null;
 }
 
 /** Maps a real `milestones` row (snake_case DB columns) to the shape the UI components already render. */
@@ -19,5 +20,6 @@ export function milestoneFromDb(row: MilestoneRow): DbMilestone {
     description: row.description ?? "",
     agePrerequisite: row.age_prerequisite ?? undefined,
     status: row.status,
+    plannedFor: row.planned_for,
   };
 }

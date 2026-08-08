@@ -4,6 +4,7 @@ import { useState } from "react";
 import { GraduationCap, Info, Search } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 
 type SortKey = "admit_rate" | "cost" | "earnings";
@@ -121,15 +122,15 @@ export function CollegeMatcher() {
               </Button>
               <label className="flex items-center gap-2 text-sm text-muted-foreground">
                 Sort by
-                <select
+                <Select
                   value={sort}
                   onChange={(e) => setSort(e.target.value as SortKey)}
-                  className="rounded-md border border-input bg-background px-2 py-1 text-sm"
+                  className="h-8 w-auto py-1"
                 >
                   <option value="admit_rate">Most selective</option>
                   <option value="cost">Lowest in-state tuition</option>
                   <option value="earnings">Highest 10-yr earnings</option>
-                </select>
+                </Select>
               </label>
             </div>
           </form>

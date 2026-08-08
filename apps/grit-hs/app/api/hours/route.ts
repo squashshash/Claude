@@ -9,6 +9,8 @@ const hoursEntrySchema = z.object({
   hours: z.number().positive(),
   date: z.string().min(1),
   notes: z.string().optional(),
+  signaturePath: z.string().optional(),
+  scannedDocPath: z.string().optional(),
 });
 
 function notConfigured() {
@@ -38,7 +40,26 @@ export async function GET() {
     .order("date", { ascending: false });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ entries: data });
+
+  const withUrls = await Promise.all(
+    (data ?? []).map(async (row) => {
+      const [signatureUrl, scannedDocUrl] = await Promise.all([
+        row.signature_path
+          ? supabase.storage.from("hours-signatures").createSignedUrl(row.signature_path, 3600)
+          : Promise.resolve({ data: null }),
+        row.scanned_doc_path
+          ? supabase.storage.from("hours-scans").createSignedUrl(row.scanned_doc_path, 3600)
+          : Promise.resolve({ data: null }),
+      ]);
+      return {
+        ...row,
+        signatureUrl: signatureUrl.data?.signedUrl ?? null,
+        scannedDocUrl: scannedDocUrl.data?.signedUrl ?? null,
+      };
+    })
+  );
+
+  return NextResponse.json({ entries: withUrls });
 }
 
 export async function POST(request: Request) {
@@ -69,6 +90,9 @@ export async function POST(request: Request) {
       hours: parsed.data.hours,
       date: parsed.data.date,
       notes: parsed.data.notes ?? null,
+      signature_path: parsed.data.signaturePath ?? null,
+      signature_captured_at: parsed.data.signaturePath ? new Date().toISOString() : null,
+      scanned_doc_path: parsed.data.scannedDocPath ?? null,
     })
     .select()
     .single();

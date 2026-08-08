@@ -78,6 +78,30 @@ export default function SignupPage() {
             <Input id="password" type="password" autoComplete="new-password" {...register("password")} />
             {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
           </div>
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="ageConfirmed" className="flex items-start gap-2.5 text-sm text-muted-foreground">
+              <input
+                id="ageConfirmed"
+                type="checkbox"
+                className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+                {...register("ageConfirmed")}
+              />
+              <span>
+                I&apos;m 13 or older, and I agree to the{" "}
+                <Link href="/terms" target="_blank" className="text-primary underline underline-offset-2">
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link href="/privacy" target="_blank" className="text-primary underline underline-offset-2">
+                  Privacy Policy
+                </Link>
+                .
+              </span>
+            </label>
+            {errors.ageConfirmed && (
+              <p className="text-sm text-destructive">{errors.ageConfirmed.message}</p>
+            )}
+          </div>
           {serverError && <p className="text-sm text-destructive">{serverError}</p>}
           <Button type="submit" disabled={isSubmitting} className="mt-2">
             {isSubmitting ? "Creating account..." : "Create account"}

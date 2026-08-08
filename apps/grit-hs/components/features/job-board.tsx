@@ -1,3 +1,5 @@
+"use client";
+
 import { Briefcase, MapPin, Clock, GraduationCap } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

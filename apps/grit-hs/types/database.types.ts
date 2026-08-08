@@ -1,17 +1,17 @@
 /**
- * Hand-written to match supabase/migrations/0001_init_schema.sql and
- * 0002_career_track_and_certifications_seed.sql. There's no live Supabase
- * project in this environment to run `supabase gen types` against — once
- * one exists, regenerate this file from it instead of hand-editing further.
+ * Hand-written to match supabase/migrations/0001 through 0008 (a real,
+ * connected Supabase project now exists — `supabase gen types` / the
+ * Supabase MCP's `generate_typescript_types` could regenerate this file for
+ * real going forward instead of continuing hand-edits).
+ *
+ * `target_career`/`career_track` columns are plain `text` with no DB-level
+ * CHECK constraint (see 0001_init_schema.sql) — CareerTrack is re-exported
+ * from lib/constants.ts (the single source of truth for valid pathways)
+ * rather than duplicated here, so the two can't drift out of sync again.
  */
 
-export type CareerTrack =
-  | "pre_med_clinical_healthcare"
-  | "nursing_advanced_practice"
-  | "software_engineering"
-  | "financial_engineering"
-  | "mechanical_engineering_cad"
-  | "law_public_policy";
+import type { CareerTrack } from "@/lib/constants";
+export type { CareerTrack };
 
 export type GradeLevelEnum = "summer_0" | "grade_9" | "grade_10" | "grade_11" | "grade_12";
 
@@ -22,6 +22,16 @@ export type MilestoneStatusEnum = "not_started" | "in_progress" | "completed" | 
 export type HoursCategoryEnum = "clinical" | "volunteer" | "shadowing";
 
 export type HoursStatusEnum = "pending" | "verified" | "rejected";
+
+export type AchievementKind = "milestone_completed" | "streak_milestone" | "xp_badge";
+
+export type ExamTypeEnum = "ap" | "sat" | "act" | "final" | "midterm" | "certification" | "other";
+
+export type ExamStatusEnum = "upcoming" | "registered" | "completed";
+
+export type ReminderPriorityEnum = "low" | "medium" | "high";
+
+export type ClubCategoryEnum = "stem" | "arts" | "athletics" | "service" | "other";
 
 export interface Database {
   public: {
@@ -39,6 +49,10 @@ export interface Database {
           xp_points: number;
           handle: string | null;
           portfolio_public: boolean;
+          current_streak: number;
+          longest_streak: number;
+          last_active_date: string | null;
+          streak_grace_available: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -54,6 +68,10 @@ export interface Database {
           xp_points?: number;
           handle?: string | null;
           portfolio_public?: boolean;
+          current_streak?: number;
+          longest_streak?: number;
+          last_active_date?: string | null;
+          streak_grace_available?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -92,6 +110,7 @@ export interface Database {
           age_prerequisite: number | null;
           status: MilestoneStatusEnum;
           sort_order: number;
+          planned_for: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -106,6 +125,7 @@ export interface Database {
           age_prerequisite?: number | null;
           status?: MilestoneStatusEnum;
           sort_order?: number;
+          planned_for?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -151,6 +171,9 @@ export interface Database {
           notes: string | null;
           verification_token: string;
           verified_at: string | null;
+          signature_path: string | null;
+          signature_captured_at: string | null;
+          scanned_doc_path: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -166,6 +189,9 @@ export interface Database {
           notes?: string | null;
           verification_token?: string;
           verified_at?: string | null;
+          signature_path?: string | null;
+          signature_captured_at?: string | null;
+          scanned_doc_path?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -202,8 +228,183 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["user_credentials"]["Insert"]>;
         Relationships: [];
       };
+      achievement_posts: {
+        Row: {
+          id: string;
+          user_id: string;
+          kind: AchievementKind;
+          title: string;
+          body: string | null;
+          milestone_id: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          kind: AchievementKind;
+          title: string;
+          body?: string | null;
+          milestone_id?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["achievement_posts"]["Insert"]>;
+        Relationships: [];
+      };
+      clubs: {
+        Row: {
+          id: string;
+          user_id: string;
+          name: string;
+          category: ClubCategoryEnum;
+          role: string | null;
+          meeting_schedule: string | null;
+          advisor_name: string | null;
+          joined_date: string | null;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          name: string;
+          category?: ClubCategoryEnum;
+          role?: string | null;
+          meeting_schedule?: string | null;
+          advisor_name?: string | null;
+          joined_date?: string | null;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["clubs"]["Insert"]>;
+        Relationships: [];
+      };
+      sports: {
+        Row: {
+          id: string;
+          user_id: string;
+          name: string;
+          season: string | null;
+          role: string | null;
+          practice_schedule: string | null;
+          coach_name: string | null;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          name: string;
+          season?: string | null;
+          role?: string | null;
+          practice_schedule?: string | null;
+          coach_name?: string | null;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["sports"]["Insert"]>;
+        Relationships: [];
+      };
+      exams: {
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          exam_type: ExamTypeEnum;
+          date: string;
+          registration_deadline: string | null;
+          location: string | null;
+          status: ExamStatusEnum;
+          notes: string | null;
+          score: number | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          title: string;
+          exam_type?: ExamTypeEnum;
+          date: string;
+          registration_deadline?: string | null;
+          location?: string | null;
+          status?: ExamStatusEnum;
+          notes?: string | null;
+          score?: number | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["exams"]["Insert"]>;
+        Relationships: [];
+      };
+      class_schedule: {
+        Row: {
+          id: string;
+          user_id: string;
+          course_name: string;
+          days_of_week: string | null;
+          start_time: string | null;
+          end_time: string | null;
+          room: string | null;
+          teacher_name: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          course_name: string;
+          days_of_week?: string | null;
+          start_time?: string | null;
+          end_time?: string | null;
+          room?: string | null;
+          teacher_name?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["class_schedule"]["Insert"]>;
+        Relationships: [];
+      };
+      reminders: {
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          due_date: string;
+          due_time: string | null;
+          course: string | null;
+          priority: ReminderPriorityEnum;
+          completed: boolean;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          title: string;
+          due_date: string;
+          due_time?: string | null;
+          course?: string | null;
+          priority?: ReminderPriorityEnum;
+          completed?: boolean;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["reminders"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      increment_xp: {
+        Args: { p_user_id: string; p_delta: number };
+        Returns: number;
+      };
+    };
   };
 }

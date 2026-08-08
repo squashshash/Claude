@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { GraduationCap, Info } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 
 export function PTechTracker() {
@@ -25,7 +26,7 @@ export function PTechTracker() {
             rel="noreferrer"
             className="font-medium text-accent underline"
           >
-            IBM's P-TECH overview
+            IBM&apos;s P-TECH overview
           </a>
           . For your own school&apos;s exact details, ask your CTE coordinator or counselor, then track
           it here yourself.
@@ -93,18 +94,14 @@ export function PTechTracker() {
           </label>
           <label className="flex flex-col gap-1 text-sm">
             <span className="font-medium text-muted-foreground">Current year in program</span>
-            <select
-              value={yearInProgram}
-              onChange={(e) => setYearInProgram(e.target.value)}
-              className="rounded-md border border-input bg-background px-3 py-2 text-sm"
-            >
+            <Select value={yearInProgram} onChange={(e) => setYearInProgram(e.target.value)}>
               <option value="">Select…</option>
               {["9", "10", "11", "12", "13", "14"].map((y) => (
                 <option key={y} value={y}>
                   Year {y}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
           {schoolName && (
             <div className="sm:col-span-2">

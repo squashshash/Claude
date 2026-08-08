@@ -6,9 +6,11 @@ import { milestoneFromDb } from "@/lib/roadmap/from-db";
 import { CAREER_TRACK_LABELS, GRADE_LEVEL_LABELS, MILESTONE_CATEGORY_LABELS } from "@/lib/constants";
 import { MOCK_STUDENT } from "@/lib/mock-data";
 import { useDashboardData } from "@/lib/hooks/use-dashboard-data";
+import { identityTitle } from "@/lib/gamification/titles";
 import { Badge } from "@/components/ui/badge";
 import { FocusModeToggle, type NextUpItem } from "@/components/dashboard/focus-mode";
 import { Reminders } from "@/components/dashboard/reminders";
+import { AchievementFeed } from "@/components/dashboard/achievement-feed";
 
 export default function DashboardPage() {
   const { data } = useDashboardData();
@@ -82,6 +84,9 @@ export default function DashboardPage() {
           <h1 className="font-display text-4xl font-bold">
             Welcome back, {fullName.split(" ")[0]}
           </h1>
+          <p className="mt-1 font-display text-sm font-bold uppercase tracking-wide text-accent">
+            {identityTitle(targetCareer, currentGrade)}
+          </p>
           <p className="mt-2 text-base text-muted-foreground">
             {GRADE_LEVEL_LABELS[currentGrade]} &middot; {CAREER_TRACK_LABELS[targetCareer]}
           </p>
@@ -104,6 +109,8 @@ export default function DashboardPage() {
         incompleteCount={incompleteThisGrade}
         portfolioPublic={portfolioPublic}
       />
+
+      <AchievementFeed />
     </div>
   );
 }

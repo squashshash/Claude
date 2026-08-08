@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { enforceRateLimit } from "@/lib/api/rate-limit-response";
+import { clientIp } from "@/lib/rate-limit";
 
 function isConfigured() {
   return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
@@ -12,8 +14,12 @@ function notConfigured() {
   );
 }
 
-export async function GET(_request: Request, { params }: { params: Promise<{ handle: string }> }) {
+export async function GET(request: Request, { params }: { params: Promise<{ handle: string }> }) {
   if (!isConfigured()) return notConfigured();
+
+  // Unauthenticated and enumerable by handle, so cap per-IP.
+  const limited = enforceRateLimit(`portfolio:${clientIp(request)}`, 60, 60);
+  if (limited) return limited;
 
   const { handle } = await params;
   const supabase = createAdminClient();

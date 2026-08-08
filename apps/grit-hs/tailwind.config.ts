@@ -47,6 +47,15 @@ const config: Config = {
           border: "hsl(var(--glass-border) / <alpha-value>)",
           highlight: "hsl(var(--glass-highlight) / <alpha-value>)",
         },
+        panel: {
+          DEFAULT: "hsl(var(--panel-bg) / <alpha-value>)",
+          card: "hsl(var(--panel-card) / <alpha-value>)",
+          foreground: "hsl(var(--panel-foreground) / <alpha-value>)",
+          muted: "hsl(var(--panel-muted-foreground) / <alpha-value>)",
+          border: "hsl(var(--panel-border) / <alpha-value>)",
+          highlight: "hsl(var(--panel-highlight) / <alpha-value>)",
+          accent: "hsl(var(--panel-accent) / <alpha-value>)",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -56,6 +65,7 @@ const config: Config = {
       fontFamily: {
         display: ["var(--font-display)", "serif"],
         sans: ["var(--font-sans)", "sans-serif"],
+        interface: ["var(--font-interface)", "sans-serif"],
       },
     },
   },

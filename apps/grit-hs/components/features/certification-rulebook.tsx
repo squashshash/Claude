@@ -5,21 +5,40 @@ import { Search, ShieldCheck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
 import { CERTIFICATION_AGE_RULES, getAgeRule } from "@/lib/roadmap/age-rules";
 import { useDashboardData } from "@/lib/hooks/use-dashboard-data";
 import { MOCK_STUDENT } from "@/lib/mock-data";
 import { CAREER_TRACK_LABELS, type CareerTrack } from "@/lib/constants";
 
-// Which cert catalog category is most relevant to each career track. Law &
-// Public Policy has no direct match in this catalog (no legal-credential
-// entries exist yet), so it's intentionally left unmapped rather than
-// forced onto an unrelated category.
+// Which cert catalog category is most relevant to each career track. The
+// catalog only has 4 categories (healthcare/finance/engineering/technology),
+// so tracks outside those fields — law, creative arts, education, trades,
+// transportation, agriculture, etc. — have no direct match and are
+// intentionally left unmapped rather than forced onto an unrelated category.
 const TRACK_TO_CERT_CATEGORY: Partial<Record<CareerTrack, string>> = {
   pre_med_clinical_healthcare: "healthcare",
   nursing_advanced_practice: "healthcare",
+  dentistry: "healthcare",
+  pharmacy: "healthcare",
+  physician_assistant: "healthcare",
+  physical_therapy: "healthcare",
+  occupational_therapy: "healthcare",
+  speech_language_pathology: "healthcare",
+  dietetics_nutrition: "healthcare",
+  radiologic_technology: "healthcare",
+  medical_lab_technician: "healthcare",
+  public_health: "healthcare",
+  veterinary_medicine: "healthcare",
   software_engineering: "technology",
+  data_science: "technology",
+  cybersecurity: "technology",
   financial_engineering: "finance",
+  accounting_cpa: "finance",
+  financial_advisory: "finance",
   mechanical_engineering_cad: "engineering",
+  civil_engineering: "engineering",
+  electrical_computer_engineering: "engineering",
 };
 
 const STATES = [
@@ -72,17 +91,17 @@ export function CertificationRulebook() {
               className="w-full bg-transparent text-sm outline-none"
             />
           </div>
-          <select
+          <Select
             value={state}
             onChange={(e) => setState(e.target.value)}
-            className="rounded-full border border-input bg-background px-4 py-2 text-sm"
+            className="w-auto rounded-full pr-8"
           >
             {STATES.map((s) => (
               <option key={s.code} value={s.code}>
                 {s.label}
               </option>
             ))}
-          </select>
+          </Select>
         </CardContent>
       </Card>
 

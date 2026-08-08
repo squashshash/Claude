@@ -10,6 +10,7 @@ export function YearColumn({
   studentAge,
   studentState,
   onToggleComplete,
+  onSetPlannedFor,
 }: {
   gradeLevel: GradeLevel;
   milestones: ResolvedMilestone[];
@@ -17,6 +18,7 @@ export function YearColumn({
   studentAge: number;
   studentState?: string;
   onToggleComplete?: (id: string, nextStatus: MilestoneStatus) => Promise<void> | void;
+  onSetPlannedFor?: (id: string, date: string) => Promise<void> | void;
 }) {
   const completedCount = milestones.filter((m) => m.status === "completed").length;
   const progressPct = milestones.length ? Math.round((completedCount / milestones.length) * 100) : 0;
@@ -36,7 +38,7 @@ export function YearColumn({
       </div>
       <Progress value={progressPct} className="h-3" />
       <div className="flex flex-col gap-3">
-        {milestones.map(({ id, milestone, status }) => (
+        {milestones.map(({ id, milestone, status, plannedFor }) => (
           <MilestoneCard
             key={id ?? `${milestone.gradeLevel}-${milestone.category}-${milestone.title}`}
             id={id}
@@ -44,7 +46,9 @@ export function YearColumn({
             status={status}
             studentAge={studentAge}
             studentState={studentState}
+            plannedFor={plannedFor}
             onToggleComplete={onToggleComplete}
+            onSetPlannedFor={onSetPlannedFor}
           />
         ))}
       </div>

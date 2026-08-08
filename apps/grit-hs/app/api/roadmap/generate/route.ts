@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { onboardingSchema } from "@/lib/validations/onboarding";
 import { getRoadmapTemplate } from "@/lib/roadmap/templates";
+import { MILESTONE_XP_AWARD } from "@/lib/constants";
+import { enforceRateLimit } from "@/lib/api/rate-limit-response";
 import type { Database } from "@/types/database.types";
 
 export async function POST(request: Request) {
@@ -35,6 +37,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
+  // Each call replaces the roadmap and writes ~20 milestone rows, so cap the churn.
+  const limited = enforceRateLimit(`roadmap-generate:${user.id}`, 10, 60 * 60);
+  if (limited) return limited;
+
+  const template = getRoadmapTemplate(targetCareer);
+  // Endowed-progress effect (Nunes & Drèze) — a new roadmap starts with its
+  // first milestone already checked off and the real XP for it already
+  // awarded, disclosed in the onboarding-complete screen as a starting
+  // step, not something manufactured to look earned.
+  const hasStartingMilestone = template.milestones.length > 0;
+
   const profileUpsert: Database["public"]["Tables"]["profiles"]["Insert"] = {
     user_id: user.id,
     full_name: (user.user_metadata?.full_name as string | undefined) ?? null,
@@ -42,6 +55,7 @@ export async function POST(request: Request) {
     zip_code: zipCode,
     target_career: targetCareer,
     current_grade: currentGrade,
+    xp_points: hasStartingMilestone ? MILESTONE_XP_AWARD : 0,
   };
 
   const { error: profileError } = await supabase
@@ -51,8 +65,6 @@ export async function POST(request: Request) {
   if (profileError) {
     return NextResponse.json({ error: profileError.message }, { status: 500 });
   }
-
-  const template = getRoadmapTemplate(targetCareer);
 
   const { data: roadmap, error: roadmapError } = await supabase
     .from("roadmaps")
@@ -83,7 +95,7 @@ export async function POST(request: Request) {
       title: m.title,
       description: m.description,
       age_prerequisite: m.agePrerequisite ?? null,
-      status: "not_started",
+      status: index === 0 ? "completed" : "not_started",
       sort_order: index,
     }));
 
@@ -93,5 +105,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: milestonesError.message }, { status: 500 });
   }
 
-  return NextResponse.json({ roadmapId: roadmap.id }, { status: 201 });
+  if (hasStartingMilestone) {
+    await supabase.from("achievement_posts").insert({
+      user_id: user.id,
+      kind: "milestone_completed",
+      title: milestoneRows[0].title,
+      body: "First milestone, already checked off — a head start on your roadmap.",
+    });
+  }
+
+  return NextResponse.json(
+    { roadmapId: roadmap.id, startedWithMilestone: hasStartingMilestone },
+    { status: 201 }
+  );
 }

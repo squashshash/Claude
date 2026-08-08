@@ -13,17 +13,17 @@ scaffolded `^0.5.2` — that version's bundled types referenced internal
 `supabase-js` paths that no longer exist in current `supabase-js`, which
 silently resolved all typed table calls to `never` instead of erroring.
 
-## Auth & backend status (Phase 3)
+## Auth & backend status (Phase 3, updated Round 14)
 
-Login/signup/onboarding pages, `middleware.ts` route protection, and the
-`/api/roadmap/generate` + `/api/outreach/generate` routes are built and
-type-checked, but **no Supabase project or AI key is configured in this
-environment** — none of it has run against a real backend. Both API routes
-detect missing env vars and return a clear `501` instead of crashing; the
-middleware skips auth enforcement entirely until
-`NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY` are set. See the
-main README's "No real backend is connected" section for exact details and
-setup steps.
+A real Supabase project is now connected (`NEXT_PUBLIC_SUPABASE_URL` /
+`NEXT_PUBLIC_SUPABASE_ANON_KEY` set in `.env.local`) — signup, login,
+onboarding, and route protection have all run against real auth, not just
+type-checked. `SUPABASE_SERVICE_ROLE_KEY` is still not set in this
+environment, so the handful of routes that need it (hours/credentials
+verification, portfolio, leaderboard, achievement-feed identity resolution)
+degrade gracefully rather than erroring — see each route's `isConfigured()`
+guard. Both `/api/roadmap/generate` and `/api/outreach/generate` still
+return a clear `501` if their respective env vars are missing.
 
 5 of the 10 "live" dashboard features (Streak/Badges, Resume Builder,
 Weekly Tasks, Hours Logger, Credential Vault) now try a real API first
@@ -73,11 +73,18 @@ it), and a credential review/`is_verified` flow.
 - 4-year matrix structure: every pathway is organized into 5 timeline tiers —
   Summer -0 (pre-9th), Grade 9, Grade 10, Grade 11, Grade 12 — see
   `lib/constants.ts` (`GRADE_LEVELS`).
-- Tracks supported: Pre-Medicine/Clinical Healthcare, Nursing & Advanced
-  Practice, Software Engineering, Financial Engineering, Mechanical
-  Engineering/CAD, Law & Public Policy — see `lib/roadmap/templates/`.
-  CTECH/P-TECH and Business/DECA-specific tracks are on the feature list
-  below but don't have their own dedicated `CareerTrackTemplate` yet.
+- Tracks supported (Round 14): 70 pathways across 9 categories (Medicine &
+  Allied Health, Engineering & Technology, Business & Finance, Law/
+  Government & Public Service, Creative Arts & Design, Science & Research,
+  Education, Transportation & Logistics, Trades & Vocational, Agriculture &
+  Environment) — see `lib/constants.ts` (`CAREER_TRACKS`,
+  `PATHWAY_CATEGORIES`) and `lib/roadmap/templates/`. The original 6 tracks
+  stay the most deeply researched (20 milestones each, individually
+  verified specifics); ~46 more sourced from a provided career report keep
+  full depth; ~18 the report only covered in a shared parenthetical get
+  honest, shorter roadmaps rather than invented specifics. Every track has
+  real content — `getRoadmapTemplate()`'s empty-array fallback exists only
+  as a build-safety net, not a real state any shipped track is in.
 
 ## Code Style & Safety Guidelines
 - Always use strict TypeScript types generated from the Supabase DB schema.
@@ -538,3 +545,74 @@ handler, nothing was actually dead. The other two were real gaps:
     Labor Laws features.
   This is in-app only, on the dashboard — no email/push infrastructure was
   added, since none was asked for.
+
+## Round 14: real backend connected, 70 pathways, diagnostic quiz, and an evidence-based XP system
+
+Four separate asks landed together: (1) connect the real Supabase backend,
+(2) expand from 6 career tracks to all pathways in a provided ~60-career
+report, selectable via a diagnostic quiz and changeable later, (3) a
+stronger login flow, (4) an XP/reward system — this one specifically built
+against two source documents that disagreed with each other, so the
+disagreement was surfaced and decided explicitly rather than silently
+picking one.
+
+- **Real backend**: `.env.local` now has real
+  `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY` for the
+  `ikbnzrhsnibcypnsphmi` project — verified end-to-end (real signup creates
+  a real `auth.users` row, middleware genuinely redirects unauthenticated
+  requests). `SUPABASE_SERVICE_ROLE_KEY` still isn't set; every route that
+  needs it degrades to its documented `501`/fallback rather than crashing.
+- **70 pathways**: `CAREER_TRACKS` grew from 6 to 70, grouped into 9
+  categories in `PATHWAY_CATEGORIES`. A 4-question diagnostic quiz
+  (`components/onboarding/pathway-quiz.tsx`) recommends a category during
+  onboarding; the same category-grouped picker
+  (`components/onboarding/career-track-step.tsx`) is reused on the Settings
+  page so a student can switch pathways later — `PATCH
+  /api/profile/pathway` replaces the roadmap/milestones for the new track
+  without touching earned XP.
+- **Login hardening**: show/hide password toggle, a real forgot-password →
+  email → reset-password flow (`/forgot-password`, `/reset-password` using
+  Supabase's `PASSWORD_RECOVERY` auth event), clearer error copy.
+- **XP system — built from two conflicting sources.** A ChatGPT-authored
+  "Part B" report recommended variable/randomized rewards ("mystery box"
+  bonus XP) and an open social achievement feed. A separately-provided,
+  properly-cited behavioral-science research doc explicitly warned against
+  variable-ratio rewards for this age group (same mechanism as slot
+  machines) and recommended keeping social features opt-in/private — which
+  is exactly how the pre-existing Track Leaderboard was already built. Both
+  conflicts were surfaced to the user directly before writing any code;
+  decisions actually made:
+  - **Variable rewards**: built tame, not random — `SURPRISE_EVERY_NTH_COMPLETION`
+    in `app/api/milestones/[id]/route.ts` gives a deterministic (every 5th
+    real completion), non-XP, inspectable acknowledgment instead of a
+    randomized reward.
+  - **Social feed**: built open, per the report, overriding the research
+    doc's opt-in-only recommendation — `achievement_posts` (migration
+    0006) has RLS letting any authenticated user read every row. Real
+    identity is still never exposed by default even so: displayed name
+    resolves to the student's public-portfolio handle if set, else "A Grit
+    student" (`app/api/achievements/route.ts`), reusing the same opt-in
+    surface the leaderboard already uses rather than a new one.
+  - **Streaks**: `streak-score.tsx` now persists for real
+    (`current_streak`/`longest_streak`/`last_active_date`/
+    `streak_grace_available` on `profiles`, `lib/gamification/streak.ts`,
+    `POST /api/streak/check-in`) instead of local `useState`. Missing
+    exactly one day doesn't zero a real streak if a grace/freeze is
+    available (auto-spent, no prompt); a new grace regenerates every 7
+    consecutive days. All copy is gain-framed ("streak freeze covered
+    yesterday"), never loss-framed, per the research doc's Duolingo
+    case study.
+  - **Identity titles**: `lib/gamification/titles.ts` derives a
+    grade+track title (e.g. "Freshman Doctor-in-Training") shown on the
+    dashboard — supported by both source docs' identity/possible-selves
+    research, not contested.
+  - **Implementation intentions**: `milestones.planned_for` (migration
+    0006) + a "when will you do this?" date input on `MilestoneCard`,
+    tied to Gollwitzer's if-then-planning research.
+  - **Endowed progress**: `/api/roadmap/generate` and `/api/profile/pathway`
+    both mark a new roadmap's first milestone complete immediately (with
+    real XP on first-ever generation, no extra XP on a pathway switch, to
+    avoid a switch-repeatedly-for-XP exploit) and post it to the
+    achievement feed labeled as a starting step — the Nunes & Drèze
+    endowed-progress effect, applied honestly (real reward, disclosed
+    origin) rather than as a fake illusion.

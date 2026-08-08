@@ -15,13 +15,18 @@ its keys before you deploy to Vercel.
    - **anon / public key** → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - **service_role key** (click "Reveal") → `SUPABASE_SERVICE_ROLE_KEY`
      — keep this one secret, never expose it client-side.
-3. Go to the **SQL Editor** and run each file in `supabase/migrations/` **in
-   order** — paste the contents of `0001_init_schema.sql`, run it, then
-   `0002_...sql`, `0003_...sql`, `0004_...sql`. Each one is idempotent-safe
-   to run once; don't skip the order, later ones depend on earlier ones.
-   `0003` also creates the `credentials` Storage bucket via SQL — no manual
-   Storage UI steps needed.
-4. Go to **Authentication → URL Configuration**. You won't know your real
+3. Go to the **SQL Editor** and run every file in `supabase/migrations/` **in
+   numeric order**, `0001` through `0013` — paste each file's contents, run
+   it, then move to the next. Each one is idempotent-safe to run once; don't
+   skip the order, later ones depend on earlier ones. `0003` and `0008` also
+   create Storage buckets (`credentials`, and `hours-signatures` +
+   `hours-scans`) via SQL — no manual Storage UI steps needed.
+4. Go to **Authentication → Policies** (or **Auth → Sign In / Providers**
+   depending on dashboard version) and turn on **"Leaked password
+   protection"**. It's off by default on a new project and there's no SQL
+   migration for it — this is the one security setting that has to be
+   flipped by hand.
+5. Go to **Authentication → URL Configuration**. You won't know your real
    Vercel domain yet, so leave the defaults for now — **you'll come back to
    this in Step 3** and it matters (skipping it breaks signup-confirmation
    email links and auth redirects in production).
@@ -80,11 +85,16 @@ Quick checklist, in order:
       Editor → auth.users** to confirm the row landed).
 - [ ] Complete onboarding — confirms `/api/roadmap/generate` is writing to
       `profiles`/`roadmaps`/`milestones`.
-- [ ] Log hours in the Hours Logger, refresh the page — confirms it's
-      reading back from `/api/hours` instead of falling back to sample
-      data (the badge should say **"Your data"**, not "Sample data").
+- [ ] Log hours from the right-side Life Panel, refresh the page —
+      confirms it's reading back from `/api/hours` instead of falling back
+      to sample data (the badge should say **"Your data"**, not "Sample
+      data").
 - [ ] Upload a credential in the Credential Vault — confirms Storage/RLS
       from migration `0003` is working.
+- [ ] Add a club with a leadership role (e.g. "President") from the Life
+      Panel and confirm the header's XP badge updates immediately without a
+      reload — confirms `increment_xp` (`0012`) and the XP-sync wiring are
+      both working.
 - [ ] If you added `COLLEGE_SCORECARD_API_KEY` / `TRANSITLAND_API_KEY`,
       confirm those two features return real results instead of the
       "not configured" message.

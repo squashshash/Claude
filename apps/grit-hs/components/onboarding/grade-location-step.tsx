@@ -1,6 +1,7 @@
 import type { UseFormRegister, FieldErrors } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { GRADE_LEVELS, GRADE_LEVEL_LABELS } from "@/lib/constants";
 import type { OnboardingInput } from "@/lib/validations/onboarding";
 
@@ -15,18 +16,14 @@ export function GradeLocationStep({
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="currentGrade">Current grade</Label>
-        <select
-          id="currentGrade"
-          {...register("currentGrade")}
-          className="h-10 rounded-md border border-input bg-background px-3 text-sm"
-        >
+        <Select id="currentGrade" {...register("currentGrade")}>
           <option value="">Select a grade</option>
           {GRADE_LEVELS.map((g) => (
             <option key={g} value={g}>
               {GRADE_LEVEL_LABELS[g]}
             </option>
           ))}
-        </select>
+        </Select>
         {errors.currentGrade && <p className="text-sm text-destructive">{errors.currentGrade.message}</p>}
       </div>
       <div className="grid gap-4 sm:grid-cols-2">

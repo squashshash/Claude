@@ -8,12 +8,14 @@ export function MilestoneMatrix({
   studentAge,
   studentState,
   onToggleComplete,
+  onSetPlannedFor,
 }: {
   milestones: ResolvedMilestone[];
   currentGrade: GradeLevel;
   studentAge: number;
   studentState?: string;
   onToggleComplete?: (id: string, nextStatus: MilestoneStatus) => Promise<void> | void;
+  onSetPlannedFor?: (id: string, date: string) => Promise<void> | void;
 }) {
   return (
     <div className="flex gap-6 overflow-x-auto pb-4">
@@ -26,6 +28,7 @@ export function MilestoneMatrix({
           studentAge={studentAge}
           studentState={studentState}
           onToggleComplete={onToggleComplete}
+          onSetPlannedFor={onSetPlannedFor}
         />
       ))}
     </div>

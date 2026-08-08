@@ -4,7 +4,48 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Compass, LayoutGrid, Settings, ChevronDown } from "lucide-react";
+import {
+  Compass,
+  LayoutGrid,
+  Settings,
+  ChevronDown,
+  GraduationCap,
+  Wrench,
+  Target,
+  Scale,
+  Briefcase,
+  Car,
+  Users,
+  FileText,
+  Trophy,
+  Calculator,
+  BookOpen,
+  ArrowRightLeft,
+  CalendarRange,
+  Award,
+  Search,
+  Stethoscope,
+  PenLine,
+  BookMarked,
+  Gavel,
+  ShieldCheck,
+  ClipboardList,
+  HandCoins,
+  Receipt,
+  IdCard,
+  Bus,
+  Mail,
+  Sun,
+  Globe,
+  Lock,
+  ListChecks,
+  Flame,
+  UserRound,
+  FileDown,
+  Eye,
+  BarChart3,
+  type LucideIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FEATURE_CATEGORIES } from "@/lib/features/registry";
 
@@ -17,6 +58,52 @@ const STATUS_DOT: Record<string, string> = {
   live: "bg-primary",
   mock: "bg-accent",
   planned: "bg-locked-foreground/40",
+};
+
+// One glyph per category, keyed by slug — same pattern as grit-agency's
+// Sidebar NAV_ICONS. Presentation-only, not part of the registry data.
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  academics: GraduationCap,
+  ctech: Wrench,
+  college: Target,
+  legal: Scale,
+  jobs: Briefcase,
+  transportation: Car,
+  experience: Users,
+  portfolio: FileText,
+  execution: Trophy,
+};
+
+// One glyph per individual feature, keyed by slug.
+const FEATURE_ICONS: Record<string, LucideIcon> = {
+  "gpa-calculator": Calculator,
+  "ap-ib-optimizer": BookOpen,
+  "dual-enrollment-predictor": ArrowRightLeft,
+  "four-year-planner": CalendarRange,
+  "p-tech-tracker": Award,
+  "college-matcher": Search,
+  "direct-admit-planner": Stethoscope,
+  "essay-deconstructor": PenLine,
+  "certification-rulebook": BookMarked,
+  "youth-labor-laws": Gavel,
+  "liability-hub": ShieldCheck,
+  "job-board": ClipboardList,
+  "grant-finder": HandCoins,
+  "tax-guide": Receipt,
+  "license-tracker": IdCard,
+  "transit-planner": Bus,
+  "ctso-strategy-engine": Trophy,
+  "cold-outreach": Mail,
+  "summer-programs": Sun,
+  "resume-builder": FileText,
+  "public-handle": Globe,
+  "credential-vault": Lock,
+  "weekly-tasks": ListChecks,
+  "streak-score": Flame,
+  "mentor-matcher": UserRound,
+  "counselor-export": FileDown,
+  "parent-dashboard": Eye,
+  "track-leaderboard": BarChart3,
 };
 
 export function Sidebar() {
@@ -40,10 +127,10 @@ export function Sidebar() {
               key={href}
               href={href}
               className={cn(
-                "flex items-center gap-3 rounded-full px-4 py-2.5 text-base font-medium transition-all duration-200 hover:translate-x-0.5",
+                "font-interface flex items-center gap-3 rounded-full px-4 py-2.5 text-base transition-all duration-200 hover:translate-x-0.5",
                 active
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-foreground/80 hover:bg-muted hover:text-foreground"
+                  ? "bg-primary font-bold text-primary-foreground shadow-sm"
+                  : "font-medium text-foreground/80 hover:bg-muted hover:text-foreground"
               )}
             >
               <Icon className="h-5 w-5" aria-hidden="true" />
@@ -56,13 +143,17 @@ export function Sidebar() {
 
         {FEATURE_CATEGORIES.map((category) => {
           const open = openCategory === category.slug;
+          const CategoryIcon = CATEGORY_ICONS[category.slug] ?? LayoutGrid;
           return (
             <div key={category.slug}>
               <button
                 onClick={() => setOpenCategory(open ? null : category.slug)}
-                className="flex w-full items-center justify-between gap-2 rounded-full px-4 py-2 text-left text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+                className="font-interface flex w-full items-center justify-between gap-2 rounded-full px-4 py-2 text-left text-sm font-bold text-muted-foreground transition-colors hover:text-foreground"
               >
-                <span>{category.title}</span>
+                <span className="flex items-center gap-2">
+                  <CategoryIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  {category.title}
+                </span>
                 <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
                   <ChevronDown className="h-4 w-4 shrink-0" />
                 </motion.span>
@@ -80,17 +171,19 @@ export function Sidebar() {
                       {category.features.map((feature) => {
                         const href = `/features/${feature.slug}`;
                         const active = pathname === href;
+                        const FeatureIcon = FEATURE_ICONS[feature.slug] ?? Compass;
                         return (
                           <Link
                             key={feature.slug}
                             href={href}
                             className={cn(
-                              "flex items-center gap-2 rounded-full px-4 py-2 text-sm transition-all duration-200 hover:translate-x-0.5",
+                              "font-interface flex items-center gap-2 rounded-full px-4 py-2 text-sm transition-all duration-200 hover:translate-x-0.5",
                               active
-                                ? "bg-muted font-semibold text-foreground"
-                                : "text-foreground/70 hover:bg-muted/60 hover:text-foreground"
+                                ? "bg-muted font-bold text-foreground"
+                                : "font-light text-foreground/70 hover:bg-muted/60 hover:text-foreground"
                             )}
                           >
+                            <FeatureIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
                             <span
                               className={cn("h-1.5 w-1.5 shrink-0 rounded-full", STATUS_DOT[feature.status])}
                               aria-hidden="true"
@@ -110,7 +203,7 @@ export function Sidebar() {
       <div className="border-t border-glass-border/30 p-3">
         <Link
           href="/settings"
-          className="flex items-center gap-3 rounded-full px-4 py-2.5 text-base font-medium text-foreground/80 transition-all duration-200 hover:translate-x-0.5 hover:bg-muted hover:text-foreground"
+          className="font-interface flex items-center gap-3 rounded-full px-4 py-2.5 text-base font-medium text-foreground/80 transition-all duration-200 hover:translate-x-0.5 hover:bg-muted hover:text-foreground"
         >
           <Settings className="h-5 w-5" aria-hidden="true" />
           Settings

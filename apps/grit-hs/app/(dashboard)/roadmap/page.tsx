@@ -35,7 +35,12 @@ export default function RoadmapPage() {
   const studentState = isReal ? data!.profile!.state ?? undefined : MOCK_STUDENT.state;
 
   const resolvedMilestones: ResolvedMilestone[] = isReal
-    ? data!.milestones!.map((row) => ({ id: row.id, milestone: milestoneFromDb(row), status: row.status }))
+    ? data!.milestones!.map((row) => ({
+        id: row.id,
+        milestone: milestoneFromDb(row),
+        status: row.status,
+        plannedFor: row.planned_for,
+      }))
     : getRoadmapTemplate(MOCK_STUDENT.targetCareer).milestones.map((m) => ({
         milestone: m,
         status: deriveMilestoneStatus(m, MOCK_STUDENT.currentGrade, MOCK_STUDENT.age, MOCK_STUDENT.state),
@@ -57,6 +62,18 @@ export default function RoadmapPage() {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: nextStatus }),
+    });
+    if (res.ok) {
+      await queryClient.invalidateQueries({ queryKey: ["dashboard-state"] });
+      await queryClient.invalidateQueries({ queryKey: ["achievements"] });
+    }
+  };
+
+  const handleSetPlannedFor = async (id: string, date: string) => {
+    const res = await fetch(`/api/milestones/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ plannedFor: date }),
     });
     if (res.ok) {
       await queryClient.invalidateQueries({ queryKey: ["dashboard-state"] });
@@ -111,6 +128,7 @@ export default function RoadmapPage() {
         studentAge={studentAge}
         studentState={studentState}
         onToggleComplete={isReal ? handleToggleComplete : undefined}
+        onSetPlannedFor={isReal ? handleSetPlannedFor : undefined}
       />
     </div>
   );

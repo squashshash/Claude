@@ -4,7 +4,6 @@ import { ApIbOptimizer } from "./ap-ib-optimizer";
 import { CertificationRulebook } from "./certification-rulebook";
 import { CtsoStrategyEngine } from "./ctso-strategy-engine";
 import { ColdOutreach } from "./cold-outreach";
-import { HoursLogger } from "./hours-logger";
 import { WeeklyTasks } from "./weekly-tasks";
 import { StreakScore } from "./streak-score";
 import { ResumeBuilder } from "./resume-builder";
@@ -35,7 +34,6 @@ export const FEATURE_COMPONENTS: Record<string, ComponentType> = {
   "certification-rulebook": CertificationRulebook,
   "ctso-strategy-engine": CtsoStrategyEngine,
   "cold-outreach": ColdOutreach,
-  "hours-logger": HoursLogger,
   "weekly-tasks": WeeklyTasks,
   "streak-score": StreakScore,
   "resume-builder": ResumeBuilder,

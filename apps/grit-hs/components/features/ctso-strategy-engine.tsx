@@ -5,14 +5,15 @@ import { Play, Pause, RotateCcw, Trophy } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
 import { CAREER_TRACKS, CAREER_TRACK_LABELS, GRADE_LEVEL_LABELS, type CareerTrack } from "@/lib/constants";
-import { ROADMAP_TEMPLATES } from "@/lib/roadmap/templates";
+import { getRoadmapTemplate } from "@/lib/roadmap/templates";
 import { useDashboardData } from "@/lib/hooks/use-dashboard-data";
 import { MOCK_STUDENT } from "@/lib/mock-data";
 
 const ALL_EVENTS = CAREER_TRACKS.flatMap((track) =>
-  ROADMAP_TEMPLATES[track].milestones
-    .filter((m) => m.category === "ctso")
+  getRoadmapTemplate(track)
+    .milestones.filter((m) => m.category === "ctso")
     .map((m) => ({ ...m, track }))
 );
 
@@ -129,10 +130,10 @@ export function CtsoStrategyEngine() {
             placeholder="Search events (Mock Trial, Financial Consulting, Robotics...)"
             className="flex-1 rounded-full border border-input bg-background px-4 py-2 text-sm outline-none"
           />
-          <select
+          <Select
             value={trackFilter}
             onChange={(e) => setTrackFilter(e.target.value as CareerTrack | "all")}
-            className="rounded-full border border-input bg-background px-4 py-2 text-sm"
+            className="w-auto rounded-full pr-8"
           >
             <option value="all">All tracks</option>
             {CAREER_TRACKS.map((t) => (
@@ -140,7 +141,7 @@ export function CtsoStrategyEngine() {
                 {CAREER_TRACK_LABELS[t]}
               </option>
             ))}
-          </select>
+          </Select>
         </CardContent>
       </Card>
 

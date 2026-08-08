@@ -3,126 +3,137 @@
 @tailwind utilities;
 
 /*
-  Design direction: "trailhead" — topographic rivers/forests instead of the
-  generic SaaS palette. Coffee-brown base (a warm, dark umber background)
-  with an all-green interactive palette on top — no yellow/teal — drawn
-  from a 5-shade forest-green ramp (0A5C36 -> 1D2E28).
+  Design direction: cream + forest-green, matching the grit-agency /
+  planner sibling projects — a light-theme flip from the dark coffee-brown
+  this app launched with (same flip those sibling projects already made
+  and validated). Warm cream background, dark coffee-brown text, a
+  desaturated bottle-green brand family on top. No separate dark-mode
+  palette: this app never had a working theme toggle (`data-theme` was set
+  in CSS but nothing in the codebase ever wrote that attribute), so rather
+  than maintain an unreachable second palette, the dark-mode blocks below
+  now mirror the same cream values — same precedent the sibling projects
+  followed (`color-scheme: light` only).
 
-  Surface treatment ("Liquid Glass"): cards/panels are frosted, saturated,
-  forest-green-tinted glass (backdrop-blur + backdrop-saturate + heavy
-  translucency + a bright top-edge highlight) floating over the brown
-  background, rather than flat opaque panels — see `--card`,
-  `--glass-border`, `--glass-highlight` and `components/ui/card.tsx`. The
-  glass tint is drawn from the same green family as `--primary`/`--accent`
-  (not slate/grey) so the material reads as "Grit green glass," not generic
-  frosted grey — deliberately keeping brown+green, not the generic
-  slate+red pairing a design-system lookup suggested.
+  Surface treatment ("Liquid Glass") is unchanged in mechanism — cards/panels
+  are still frosted, tinted, translucent glass (backdrop-blur +
+  backdrop-saturate + heavy translucency + a bright top-edge highlight)
+  floating over the background — only the color values underneath it moved
+  from brown/bright-green to cream/forest-green. See `--card`,
+  `--glass-border`, `--glass-highlight` and `components/ui/card.tsx`.
 */
 
 @layer base {
   :root {
-    --background: 16 32% 17%;
-    --foreground: 30 28% 92%;
+    --background: 36 47% 90%;
+    --foreground: 27 40% 12%;
 
-    /* Forest-green glass surface, used translucent (bg-card/45) over the brown background */
-    --card: 150 30% 26%;
-    --card-foreground: 30 28% 92%;
+    /* Near-white cream glass surface, used translucent (bg-card/45) over the cream background */
+    --card: 40 82% 98%;
+    --card-foreground: 27 40% 12%;
 
-    /* Brighter, more saturated "Grit green" brand primary — dark text on top, not white, since it's too vivid for white to stay legible */
-    --primary: 145 58% 45%;
-    --primary-foreground: 150 45% 8%;
+    /* Bottle-green brand primary — cream text on top, not dark, since the green is dark enough to need a light foreground */
+    --primary: 160 50% 24%;
+    --primary-foreground: 40 82% 98%;
 
-    /* 1D2E28 — Gunmetal green */
-    --secondary: 159 27% 11%;
-    --secondary-foreground: 30 30% 95%;
+    /* Soft cream-surface secondary, not a third green — keeps low-emphasis UI from reading as another accent */
+    --secondary: 39 55% 94%;
+    --secondary-foreground: 27 40% 12%;
 
-    /* Brightened Castleton green — more vivid than before, still dark enough for white text at 6.4:1 */
-    --accent: 150 68% 24%;
-    --accent-foreground: 30 30% 96%;
+    /* Mid-tone bottle green, slightly brighter than primary for hover/emphasis states */
+    --accent: 160 49% 28%;
+    --accent-foreground: 40 82% 98%;
 
-    --muted: 16 20% 30%;
-    --muted-foreground: 30 16% 76%;
+    --muted: 36 30% 85%;
+    --muted-foreground: 32 20% 35%;
 
     --destructive: 4 62% 48%;
-    --destructive-foreground: 30 30% 96%;
+    --destructive-foreground: 40 82% 98%;
 
-    --locked: 16 16% 32%;
-    --locked-foreground: 30 12% 72%;
+    --locked: 32 15% 75%;
+    --locked-foreground: 30 24% 29%;
 
-    --border: 16 18% 32%;
-    --input: 16 18% 32%;
-    --ring: 145 58% 45%;
+    --border: 36 25% 78%;
+    --input: 36 25% 78%;
+    --ring: 160 50% 24%;
 
-    /* Bright forest-green glass edge + minty top highlight — visible, not a hairline */
-    --glass-border: 148 55% 68%;
-    --glass-highlight: 145 60% 94%;
+    /* Light green-tinted glass edge + near-white top highlight — visible, not a hairline */
+    --glass-border: 158 40% 55%;
+    --glass-highlight: 40 60% 97%;
 
     --radius: 1.25rem;
 
-    --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+    --font-display: var(--font-rubik-mono), "Arial Narrow", sans-serif;
     --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    /* Interface font — sidebar/nav labels only, see components/layout/sidebar.tsx */
+    --font-interface: var(--font-sour-gummy), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+    /*
+      Right-side "Life Panel" (clubs/sports/exams/schedule/reminders/hours) —
+      a deliberately dark zone, independent of the light cream theme above,
+      so the liquid-chromatic/WebGL shader effects actually read with
+      contrast. --panel-bg is literally --foreground's coffee-brown reused
+      as a background (this app's original dark palette before the cream
+      flip, per its own design history) with --primary/--accent's bottle
+      green as the interactive family on top — same brown+green brand, just
+      inverted, not a bespoke third palette. See components/layout/right-rail.tsx
+      and components/layout/right-drawer.tsx.
+    */
+    --panel-bg: 27 40% 12%;
+    --panel-card: 27 34% 17%;
+    --panel-foreground: 40 82% 98%;
+    --panel-muted-foreground: 33 20% 68%;
+    --panel-border: 158 40% 55%;
+    --panel-highlight: 150 70% 55%;
+    --panel-accent: 160 49% 34%;
   }
 
   :root[data-theme="dark"] {
-    --background: 16 30% 9%;
-    --foreground: 30 22% 88%;
-
-    /* Forest-green glass surface, deepened for near-black background */
-    --card: 152 26% 15%;
-    --card-foreground: 30 22% 88%;
-
-    /* Brighter brand primary, tuned slightly lighter for the near-black dark background */
-    --primary: 145 50% 50%;
-    --primary-foreground: 150 45% 8%;
-
-    /* 1D2E28 — Gunmetal green, lightened just enough to read on near-black */
-    --secondary: 159 22% 24%;
-    --secondary-foreground: 30 25% 92%;
-
-    /* Brightened Castleton green — more vivid than before, still dark enough for white text at 4.8:1 */
-    --accent: 150 65% 30%;
-    --accent-foreground: 30 25% 95%;
-
-    --muted: 16 16% 17%;
-    --muted-foreground: 30 12% 65%;
-
-    --destructive: 4 54% 48%;
-    --destructive-foreground: 30 25% 95%;
-
-    --locked: 16 14% 19%;
-    --locked-foreground: 30 8% 55%;
-
-    --border: 16 14% 21%;
-    --input: 16 14% 21%;
-    --ring: 145 50% 50%;
-
-    --glass-border: 148 55% 62%;
-    --glass-highlight: 145 60% 90%;
+    --background: 36 47% 90%;
+    --foreground: 27 40% 12%;
+    --card: 40 82% 98%;
+    --card-foreground: 27 40% 12%;
+    --primary: 160 50% 24%;
+    --primary-foreground: 40 82% 98%;
+    --secondary: 39 55% 94%;
+    --secondary-foreground: 27 40% 12%;
+    --accent: 160 49% 28%;
+    --accent-foreground: 40 82% 98%;
+    --muted: 36 30% 85%;
+    --muted-foreground: 32 20% 35%;
+    --destructive: 4 62% 48%;
+    --destructive-foreground: 40 82% 98%;
+    --locked: 32 15% 75%;
+    --locked-foreground: 30 24% 29%;
+    --border: 36 25% 78%;
+    --input: 36 25% 78%;
+    --ring: 160 50% 24%;
+    --glass-border: 158 40% 55%;
+    --glass-highlight: 40 60% 97%;
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --background: 16 30% 9%;
-      --foreground: 30 22% 88%;
-      --card: 152 26% 15%;
-      --card-foreground: 30 22% 88%;
-      --primary: 145 50% 50%;
-      --primary-foreground: 150 45% 8%;
-      --secondary: 159 22% 24%;
-      --secondary-foreground: 30 25% 92%;
-      --accent: 150 65% 30%;
-      --accent-foreground: 30 25% 95%;
-      --muted: 16 16% 17%;
-      --muted-foreground: 30 12% 65%;
-      --destructive: 4 54% 48%;
-      --destructive-foreground: 30 25% 95%;
-      --locked: 16 14% 19%;
-      --locked-foreground: 30 8% 55%;
-      --border: 16 14% 21%;
-      --input: 16 14% 21%;
-      --ring: 145 50% 50%;
-      --glass-border: 148 55% 62%;
-      --glass-highlight: 145 60% 90%;
+      --background: 36 47% 90%;
+      --foreground: 27 40% 12%;
+      --card: 40 82% 98%;
+      --card-foreground: 27 40% 12%;
+      --primary: 160 50% 24%;
+      --primary-foreground: 40 82% 98%;
+      --secondary: 39 55% 94%;
+      --secondary-foreground: 27 40% 12%;
+      --accent: 160 49% 28%;
+      --accent-foreground: 40 82% 98%;
+      --muted: 36 30% 85%;
+      --muted-foreground: 32 20% 35%;
+      --destructive: 4 62% 48%;
+      --destructive-foreground: 40 82% 98%;
+      --locked: 32 15% 75%;
+      --locked-foreground: 30 24% 29%;
+      --border: 36 25% 78%;
+      --input: 36 25% 78%;
+      --ring: 160 50% 24%;
+      --glass-border: 158 40% 55%;
+      --glass-highlight: 40 60% 97%;
     }
   }
 
@@ -156,6 +167,12 @@
   0% { transform: translateX(-160%) skewX(-12deg); opacity: 0; }
   15% { opacity: 0.6; }
   100% { transform: translateX(160%) skewX(-12deg); opacity: 0; }
+}
+
+/* Urgent-exam countdown ring pulse — see components/panel/exam-countdown-ring.tsx */
+@keyframes ring-pulse {
+  0%, 100% { filter: drop-shadow(0 0 3px currentColor); }
+  50% { filter: drop-shadow(0 0 9px currentColor); }
 }
 
 @media (prefers-reduced-motion: reduce) {

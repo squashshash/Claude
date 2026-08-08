@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { XpCounter } from "@/components/shared/xp-counter";
 
@@ -24,9 +25,15 @@ export function Header({
       </div>
       <div className="flex items-center gap-4">
         <XpCounter xp={xp} />
-        <Avatar className="h-11 w-11">
-          <AvatarFallback className="text-base">{initials}</AvatarFallback>
-        </Avatar>
+        <Link
+          href="/settings"
+          aria-label={`${studentName} — account settings`}
+          className="rounded-full transition-transform duration-200 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          <Avatar className="h-11 w-11 cursor-pointer">
+            <AvatarFallback className="text-base">{initials}</AvatarFallback>
+          </Avatar>
+        </Link>
       </div>
     </header>
   );

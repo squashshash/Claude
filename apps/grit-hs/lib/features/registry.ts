@@ -182,13 +182,6 @@ export const FEATURE_CATEGORIES: FeatureCategory[] = [
         status: "mock",
       },
       {
-        slug: "hours-logger",
-        number: 21,
-        title: "Clinical & Volunteer Hours Verification Logger",
-        blurb: "Log hours and capture a supervisor signature right on screen.",
-        status: "live",
-      },
-      {
         slug: "summer-programs",
         number: 22,
         title: "High-Yield Summer Program Directory",

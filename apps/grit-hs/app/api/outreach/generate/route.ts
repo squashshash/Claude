@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { generateText } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
 import { z } from "zod";
+import { createClient } from "@/lib/supabase/server";
+import { enforceRateLimit } from "@/lib/api/rate-limit-response";
 
 const outreachSchema = z.object({
   studentName: z.string().min(1),
@@ -27,6 +29,20 @@ export async function POST(request: Request) {
       { status: 501 }
     );
   }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+
+  const limited = enforceRateLimit(
+    `outreach:${user.id}`,
+    20,
+    60 * 60,
+    "You've generated a lot of drafts in the last hour — try again shortly."
+  );
+  if (limited) return limited;
 
   const body = await request.json().catch(() => null);
   const parsed = outreachSchema.safeParse(body);
